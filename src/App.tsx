@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Subscriber, SubscriptionStatus, NavTab } from './types';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
@@ -10,9 +10,10 @@ import { SignOutModal } from './components/SignOutModal';
 import { AuthScreen } from './components/AuthScreen';
 import { useAuth } from './context/AuthContext';
 import { useDataContext } from './context/DataContext';
+import { useTheme } from './context/ThemeContext';
 import { auth } from './lib/firebase';
 import { normalizeETPhone } from './utils';
-import { Menu, Plus, CheckCircle2, AlertCircle, LogOut, Loader2, Building2 } from 'lucide-react';
+import { Menu, Plus, CheckCircle2, AlertCircle, LogOut, Loader2, Building2, Sun, Moon } from 'lucide-react';
 
 import { getSecureItem, setSecureItem } from './lib/storage';
 
@@ -23,6 +24,7 @@ interface ToastState {
 
 export default function App() {
   const { user, loading, logout, organizationId, organizationName } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const {
     subscribers,
     setSubscribers,
@@ -40,33 +42,43 @@ export default function App() {
   const [editingSubscriber, setEditingSubscriber] = useState<Subscriber | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
-
-  // Hard-reset theme state to light mode and remove stale dark class
-  useEffect(() => {
-    localStorage.removeItem('theme');
-    localStorage.setItem('theme', 'light');
-    document.documentElement.classList.remove('dark');
-    document.documentElement.classList.add('light');
-  }, []);
-
-  const handleConfirmLogout = async () => {
-    await logout();
-    setIsSignOutModalOpen(false);
-  };
+  const toastTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const DEFAULT_BOT_TOKEN = '8910475517:AAE9epqy7MjShdyTquj-_nTp0ROVSB8ArqM';
 
   // Bot token management with fallback and user-scoped secure storage persistence
-  const [botToken, setBotToken] = useState<string>(() => {
-    const activeUid = auth.currentUser?.uid || currentUserId;
-    if (activeUid) {
-      const stored = getSecureItem<string>('telegram_bot_token', activeUid);
+  const [botToken, setBotToken] = useState<string>(DEFAULT_BOT_TOKEN);
+
+  // 1. INSTANT LOCAL STATE CLEANUP & RESET ON USER CHANGE / LOGOUT
+  React.useEffect(() => {
+    setIsModalOpen(false);
+    setIsSignOutModalOpen(false);
+    setEditingSubscriber(null);
+    setIsMobileSidebarOpen(false);
+    setToast(null);
+
+    if (currentUserId) {
+      const stored = getSecureItem<string>('telegram_bot_token', currentUserId);
       if (stored && !stored.includes('8072136331')) {
-        return stored.trim();
+        setBotToken(stored.trim());
+      } else {
+        setBotToken(DEFAULT_BOT_TOKEN);
       }
+    } else {
+      setBotToken(DEFAULT_BOT_TOKEN);
     }
-    return DEFAULT_BOT_TOKEN;
-  });
+
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, [currentUserId]);
+
+  const handleConfirmLogout = async () => {
+    setIsSignOutModalOpen(false);
+    setIsModalOpen(false);
+    setEditingSubscriber(null);
+    await logout();
+  };
 
   const handleUpdateBotToken = (newToken: string) => {
     const cleanToken = newToken.trim().replace(/^bot/i, '');
@@ -78,8 +90,9 @@ export default function App() {
   };
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 4000);
   };
 
 
@@ -337,24 +350,24 @@ Thank you for your business!`;
   ).length;
 
   if (!user) {
-    return <AuthScreen />;
+    return <AuthScreen key="auth-screen" />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex font-sans antialiased selection:bg-gray-900 selection:text-white">
+    <div key={currentUserId || 'guest'} className="min-h-screen bg-[#f3f4f6] dark:bg-black text-slate-900 dark:text-gray-100 flex font-sans antialiased selection:bg-gray-900 selection:text-white dark:selection:bg-white dark:selection:text-gray-900">
       {/* Toast Notification */}
       {toast && (
         <div
           className={`fixed bottom-5 right-5 z-50 text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200 border ${
             toast.type === 'error'
-              ? 'bg-rose-50 text-rose-800 border-rose-200 shadow-rose-100'
-              : 'bg-white text-gray-900 border-gray-200 shadow-gray-200/80'
+              ? 'bg-rose-50 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-900/80 shadow-rose-100 dark:shadow-none'
+              : 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 border-gray-200 dark:border-neutral-800 shadow-gray-200/80 dark:shadow-none'
           }`}
         >
           {toast.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           )}
           <span>{toast.message}</span>
         </div>
@@ -372,27 +385,27 @@ Thank you for your business!`;
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-gray-50">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f3f4f6] dark:bg-black">
         {/* Top Navbar Header */}
-        <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+        <header className="bg-[#f8f9fa]/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg"
               aria-label="Open navigation menu"
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:block font-mono">
+              <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:block font-mono">
                 {currentTab === 'dashboard' && 'Executive Metrics Overview'}
                 {currentTab === 'subscribers' && 'Subscribers Directory Management'}
                 {currentTab === 'dunning' && 'Dunning & Arrears Engine'}
                 {currentTab === 'settings' && 'Platform & Bot Settings'}
               </div>
               {isSyncing && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200 animate-pulse">
-                  <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-600" />
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800/60 animate-pulse">
+                  <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-600 dark:text-sky-400" />
                   <span>Syncing...</span>
                 </span>
               )}
@@ -402,31 +415,45 @@ Thank you for your business!`;
           <div className="flex items-center gap-2.5 sm:gap-3">
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-sm border border-gray-800"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-[#184528] hover:bg-[#12331b] active:bg-[#0c2212] rounded-xl transition-all shadow-xs border border-[#184528] focus:outline-none focus:ring-2 focus:ring-[#184528]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Subscriber</span>
             </button>
 
-            <div className="w-px h-5 bg-gray-200 hidden sm:block" />
+            <div className="w-px h-5 bg-gray-200 dark:bg-neutral-800 hidden sm:block" />
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#184528] dark:hover:text-emerald-400 bg-gray-100 dark:bg-black hover:bg-[#e8f0eb] dark:hover:bg-neutral-900 rounded-xl transition-all border border-gray-200 dark:border-neutral-800 shadow-xs active:scale-95"
+              aria-label="Toggle theme"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400 transition-transform duration-200 rotate-0 hover:rotate-45" />
+              ) : (
+                <Moon className="w-4 h-4 text-gray-700 transition-transform duration-200 rotate-0 hover:-rotate-12" />
+              )}
+            </button>
 
             {/* Active Organization Business Name Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 border border-gray-200 text-gray-800 rounded-xl text-xs font-semibold shadow-xs">
-              <Building2 className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e8f0eb] dark:bg-[#184528]/30 border border-[#184528]/20 dark:border-emerald-800/40 text-[#184528] dark:text-emerald-300 rounded-xl text-xs font-semibold shadow-xs">
+              <Building2 className="w-3.5 h-3.5 text-[#184528] dark:text-emerald-400 shrink-0" />
               <span className="truncate max-w-[120px] sm:max-w-[180px]">{organizationName}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-gray-700">
+              <div className="w-7 h-7 rounded-full bg-[#184528] text-white text-xs font-bold flex items-center justify-center shrink-0 border border-[#12331b]">
                 {user?.email ? user.email.charAt(0).toUpperCase() : 'S'}
               </div>
               {user && (
                 <button
                   onClick={() => setIsSignOutModalOpen(true)}
                   title="Sign Out"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200/80 rounded-xl transition-colors border border-gray-200"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 bg-gray-100 dark:bg-black hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors border border-gray-200 dark:border-neutral-800"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                  <LogOut className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 shrink-0" />
                   <span className="hidden sm:inline">Sign Out</span>
                 </button>
               )}

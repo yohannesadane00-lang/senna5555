@@ -49,18 +49,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-5 select-none text-gray-800">
+    <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-black border-r border-gray-200/80 dark:border-neutral-800 w-64 p-5 select-none text-slate-900 dark:text-gray-200">
       {/* Brand Header */}
-      <div className="flex items-center justify-between pb-6 mb-2 border-b border-gray-200">
+      <div className="flex items-center justify-between pb-6 mb-2 border-b border-gray-200 dark:border-neutral-800">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gray-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          <div className="w-8 h-8 rounded-xl bg-[#184528] text-white flex items-center justify-center font-bold text-lg shadow-xs border border-[#12331b]">
             S
           </div>
           <div>
-            <span className="text-lg font-bold text-gray-900 tracking-tight block leading-none">
+            <span className="text-lg font-extrabold text-black dark:text-white tracking-tight block leading-none">
               Senna
             </span>
-            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mt-1">
+            <span className="text-[10px] text-[#184528] dark:text-emerald-400 uppercase font-bold tracking-wider block mt-1">
               B2B Subscriptions
             </span>
           </div>
@@ -69,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Mobile close button */}
         <button
           onClick={onToggleMobile}
-          className="md:hidden p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+          className="md:hidden p-1.5 text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-neutral-900 rounded-lg"
         >
           <X className="w-5 h-5" />
         </button>
@@ -77,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation Section */}
       <nav className="flex-1 space-y-1.5 py-2">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-2">
+        <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 mb-2">
           Management
         </div>
         {navItems.map((item) => {
@@ -91,22 +91,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onSelectTab(item.id);
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-all ${
                 isActive
-                  ? 'bg-gray-900 text-white shadow-sm font-bold border border-gray-900'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  ? 'bg-[#184528] text-white shadow-xs font-bold border border-[#12331b]'
+                  : 'text-slate-800 dark:text-gray-300 font-semibold hover:bg-[#e8f0eb] dark:hover:bg-neutral-900 hover:text-[#184528] dark:hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-600 dark:text-gray-400'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge !== undefined && (
                 <span
                   className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                     isActive
-                      ? 'bg-gray-800 text-gray-100'
-                      : item.badgeColor || 'bg-gray-100 text-gray-700'
+                      ? 'bg-[#e8f0eb] text-[#184528]'
+                      : item.badgeColor || 'bg-gray-200 dark:bg-black text-slate-900 dark:text-gray-300 border border-gray-300 dark:border-neutral-800'
                   }`}
                 >
                   {item.badge}
@@ -118,13 +118,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Footer Info Box */}
-      <div className="pt-4 border-t border-gray-200 space-y-3">
-        <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+      <div className="pt-4 border-t border-gray-200 dark:border-neutral-800 space-y-3">
+        <div className="bg-[#e8f0eb] dark:bg-black p-3 rounded-xl border border-[#184528]/20 dark:border-neutral-800">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#184528] dark:text-emerald-400">
+            <ShieldCheck className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
             <span>Ethiopian Birr (ETB)</span>
           </div>
-          <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+          <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
             Automatic 09..., 07..., +251 normalization engine.
           </p>
         </div>
@@ -136,14 +136,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onSignOut();
               if (isOpenMobile) onToggleMobile();
             }}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 rounded-xl transition-all shadow-xs"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100/80 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900/60 rounded-xl transition-all shadow-xs"
           >
-            <LogOut className="w-4 h-4 text-rose-600" />
+            <LogOut className="w-4 h-4 text-rose-600 dark:text-rose-400" />
             <span>Sign Out</span>
           </button>
         )}
 
-        <div className="text-[10px] text-gray-400 text-center font-mono">
+        <div className="text-[10px] text-gray-400 dark:text-gray-500 text-center font-mono">
           Senna B2B Engine v2.0
         </div>
       </div>

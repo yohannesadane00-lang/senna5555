@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Subscriber, SubscriptionStatus } from '../types';
 import { useAuth } from './AuthContext';
 import { db, auth } from '../lib/firebase';
-import { collection, query, where, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getSecureItem, setSecureItem } from '../lib/storage';
 
@@ -44,7 +44,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // 2. REACTIVE DATA FETCHING & AUTO-CLEANUP
   useEffect(() => {
-    // When organizationId is empty or changes (logout / user switch), immediately wipe in-memory state
+    // When activeOrgId is empty or changes (logout / user switch), immediately wipe in-memory state
     if (!auth.currentUser?.uid || !activeOrgId) {
       setSubscribers([]);
       setIsDataLoaded(false);
@@ -53,17 +53,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
-    let isMounted = true;
-
-    // Load from cache for frame-1 rendering
+    // Load from cache for frame-1 rendering (0ms delay)
     const cachedData = getSecureItem<Subscriber[]>('subscribers', activeOrgId);
-    let hasCached = false;
-
     if (Array.isArray(cachedData) && cachedData.length > 0) {
       setSubscribers(cachedData);
       setIsDataLoaded(true);
       setIsLoading(false);
-      hasCached = true;
     } else {
       setSubscribers([]);
       setIsLoading(true);
@@ -71,118 +66,53 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     setIsSyncing(true);
 
-    const fetchSubscribers = async () => {
-      if (!auth.currentUser?.uid || !activeOrgId) {
-        if (isMounted) {
-          setSubscribers([]);
-          setIsLoading(false);
-          setIsSyncing(false);
-        }
-        return;
-      }
+    // Filter strictly by organization_id
+    const qOrg = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
 
-      const recordsMap = new Map<string, Subscriber>();
+    // Real-time listener with automatic teardown
+    const unsubscribe = onSnapshot(
+      qOrg,
+      (snapshot) => {
+        const recordsMap = new Map<string, Subscriber>();
 
-      try {
-        // Filter strictly by organization_id
-        const qOrg = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
-        const qUser = query(collection(db, 'subscribers'), where('user_id', '==', activeOrgId));
-
-        const fsOrgPromise = getDocs(qOrg);
-        const fsUserPromise = getDocs(qUser);
-        const sbPromise = isSupabaseConfigured
-          ? supabase
-              .from('subscribers')
-              .select('*')
-              .eq('organization_id', activeOrgId)
-          : Promise.resolve(null);
-
-        const [fsOrgRes, fsUserRes, sbRes] = await Promise.allSettled([
-          fsOrgPromise,
-          fsUserPromise,
-          sbPromise,
-        ]);
-
-        if (fsOrgRes.status === 'fulfilled' && fsOrgRes.value) {
-          fsOrgRes.value.forEach((docSnap) => {
-            const d = docSnap.data();
-            recordsMap.set(docSnap.id, {
-              id: docSnap.id,
-              name: d.name || '',
-              phone: d.phone || '',
-              telegramChatId: d.telegramChatId || d.telegram_chat_id || '',
-              planName: d.planName || d.plan_name || '',
-              amount: Number(d.amount) || 0,
-              status: (d.status as SubscriptionStatus) || 'Pending',
-              nextBillingDate: d.nextBillingDate || d.next_billing_date || '',
-              lastPaymentDate: d.lastPaymentDate || d.last_payment_date || '',
-              organization_id: d.organization_id || activeOrgId,
-            });
+        snapshot.forEach((docSnap) => {
+          const d = docSnap.data();
+          recordsMap.set(docSnap.id, {
+            id: docSnap.id,
+            name: d.name || '',
+            phone: d.phone || '',
+            telegramChatId: d.telegramChatId || d.telegram_chat_id || '',
+            planName: d.planName || d.plan_name || '',
+            amount: Number(d.amount) || 0,
+            status: (d.status as SubscriptionStatus) || 'Pending',
+            nextBillingDate: d.nextBillingDate || d.next_billing_date || '',
+            lastPaymentDate: d.lastPaymentDate || d.last_payment_date || '',
+            organization_id: d.organization_id || activeOrgId,
           });
-        }
-
-        if (fsUserRes.status === 'fulfilled' && fsUserRes.value) {
-          fsUserRes.value.forEach((docSnap) => {
-            if (!recordsMap.has(docSnap.id)) {
-              const d = docSnap.data();
-              recordsMap.set(docSnap.id, {
-                id: docSnap.id,
-                name: d.name || '',
-                phone: d.phone || '',
-                telegramChatId: d.telegramChatId || d.telegram_chat_id || '',
-                planName: d.planName || d.plan_name || '',
-                amount: Number(d.amount) || 0,
-                status: (d.status as SubscriptionStatus) || 'Pending',
-                nextBillingDate: d.nextBillingDate || d.next_billing_date || '',
-                lastPaymentDate: d.lastPaymentDate || d.last_payment_date || '',
-                organization_id: d.organization_id || activeOrgId,
-              });
-            }
-          });
-        }
-
-        if (sbRes.status === 'fulfilled' && sbRes.value && sbRes.value.data) {
-          sbRes.value.data.forEach((d: any) => {
-            if (d.id && !recordsMap.has(d.id)) {
-              recordsMap.set(d.id, {
-                id: d.id,
-                name: d.name || '',
-                phone: d.phone || '',
-                telegramChatId: d.telegram_chat_id || d.telegramChatId || '',
-                planName: d.plan_name || d.planName || '',
-                amount: Number(d.amount) || 0,
-                status: (d.status as SubscriptionStatus) || 'Pending',
-                nextBillingDate: d.next_billing_date || d.nextBillingDate || '',
-                lastPaymentDate: d.last_payment_date || d.lastPaymentDate || '',
-                organization_id: d.organization_id || activeOrgId,
-              });
-            }
-          });
-        }
+        });
 
         const fetchedList = Array.from(recordsMap.values());
 
-        if (isMounted) {
-          // If query returns zero records, state defaults strictly to []
-          setSubscribers(fetchedList);
-          setSecureItem('subscribers', activeOrgId, fetchedList);
-          setIsDataLoaded(true);
-          setIsLoading(false);
-          setIsSyncing(false);
-        }
-      } catch (err) {
-        console.warn('[DataContext] Fetch error:', err);
-        if (isMounted) {
-          setIsLoading(false);
-          setIsSyncing(false);
-        }
+        setSubscribers(fetchedList);
+        setSecureItem('subscribers', activeOrgId, fetchedList);
+        setIsDataLoaded(true);
+        setIsLoading(false);
+        setIsSyncing(false);
+      },
+      (err) => {
+        console.warn('[DataContext] Firestore onSnapshot error:', err);
+        setIsLoading(false);
+        setIsSyncing(false);
       }
-    };
+    );
 
-    fetchSubscribers();
-
+    // PROPER LISTENER TEARDOWN on unmount or user switch
     return () => {
-      isMounted = false;
+      unsubscribe();
+      setSubscribers([]);
+      setIsDataLoaded(false);
+      setIsLoading(false);
+      setIsSyncing(false);
     };
   }, [activeOrgId, user]);
 

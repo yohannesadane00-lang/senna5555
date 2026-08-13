@@ -1,13 +1,44 @@
 @import "tailwindcss";
 
+@theme {
+  --color-forest-50: #e8f0eb;
+  --color-forest-100: #d1e1d7;
+  --color-forest-200: #a3c3af;
+  --color-forest-300: #75a587;
+  --color-forest-400: #47875f;
+  --color-forest-500: #184528;
+  --color-forest-600: #184528;
+  --color-forest-700: #184528;
+  --color-forest-800: #12331b;
+  --color-forest-900: #0c2212;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
 :root {
+  --primary-accent: #184528;
+  --primary-hover: #12331b;
+  --primary-light: #e8f0eb;
+  color-scheme: light dark;
+}
+
+html.dark,
+html.dark body {
+  background-color: #000000;
+  color: #f9fafb;
+  color-scheme: dark;
+}
+
+html:not(.dark),
+html:not(.dark) body {
+  background-color: #f3f4f6;
+  color: #0f172a;
   color-scheme: light;
 }
 
-html,
 body {
-  background-color: #f9fafb;
-  color: #111827;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
+
 

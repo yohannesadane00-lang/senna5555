@@ -180,17 +180,17 @@ Senna Commerce Billing Dept.`;
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto text-gray-900">
+    <div className="space-y-8 max-w-7xl mx-auto text-gray-900 dark:text-gray-100">
       {/* Top Banner Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-neutral-800 pb-6">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-rose-50 border border-rose-200 text-rose-600 rounded-xl">
+            <div className="p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl">
               <ShieldAlert className="w-5 h-5" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dunning & Arrears Engine</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dunning & Arrears Engine</h1>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Automated collections pipeline with Telegram dunning notices and aging analysis.
           </p>
         </div>
@@ -198,7 +198,7 @@ Senna Commerce Billing Dept.`;
         <button
           onClick={handleBulkDunning}
           disabled={isBulkSending || overdueSubscribers.length === 0}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-xs transition-all border border-rose-700"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-xs transition-all border border-rose-700 dark:border-rose-500"
         >
           {isBulkSending ? (
             <>
@@ -217,15 +217,15 @@ Senna Commerce Billing Dept.`;
       {/* Overdue Total & Aging Buckets Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Overdue Receivables */}
-        <div className="bg-white p-5 rounded-2xl border border-rose-200 shadow-xs space-y-2 relative overflow-hidden">
-          <div className="flex items-center justify-between text-gray-500 text-xs font-medium uppercase tracking-wider">
+        <div className="bg-white dark:bg-black p-5 rounded-2xl border border-rose-200 dark:border-rose-900/60 shadow-xs space-y-2 relative overflow-hidden">
+          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">
             <span>Total Overdue Receivables</span>
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
+            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
           </div>
-          <div className="text-2xl font-extrabold text-rose-600 tracking-tight">
+          <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-400 tracking-tight">
             {formatETB(totalOverdueAmount)}
           </div>
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400">
             Across {overdueSubscribers.length} accounts needing collection
           </p>
         </div>
@@ -235,18 +235,18 @@ Senna Commerce Billing Dept.`;
           onClick={() => setAgingTab(agingTab === '1-15' ? 'ALL' : '1-15')}
           className={`p-5 rounded-2xl border transition-all cursor-pointer ${
             agingTab === '1-15' 
-              ? 'bg-amber-50/60 border-amber-300 ring-2 ring-amber-200' 
-              : 'bg-white border-gray-200 hover:border-amber-300'
+              ? 'bg-amber-50/60 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 ring-2 ring-amber-200 dark:ring-amber-900' 
+              : 'bg-white dark:bg-black border-gray-200 dark:border-neutral-800 hover:border-amber-300 dark:hover:border-amber-700'
           }`}
         >
-          <div className="flex items-center justify-between text-amber-700 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center justify-between text-amber-700 dark:text-amber-400 text-xs font-semibold uppercase tracking-wider">
             <span>1–15 Days Overdue</span>
             <Clock className="w-4 h-4" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mt-2">
-            {bucket1_15.length} <span className="text-xs font-normal text-gray-500">Accounts</span>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+            {bucket1_15.length} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">Accounts</span>
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
             Total: {formatETB(bucket1_15.reduce((sum, s) => sum + s.amount, 0))}
           </p>
         </div>
@@ -256,18 +256,18 @@ Senna Commerce Billing Dept.`;
           onClick={() => setAgingTab(agingTab === '16-30' ? 'ALL' : '16-30')}
           className={`p-5 rounded-2xl border transition-all cursor-pointer ${
             agingTab === '16-30' 
-              ? 'bg-orange-50/60 border-orange-300 ring-2 ring-orange-200' 
-              : 'bg-white border-gray-200 hover:border-orange-300'
+              ? 'bg-orange-50/60 dark:bg-orange-950/40 border-orange-300 dark:border-orange-700 ring-2 ring-orange-200 dark:ring-orange-900' 
+              : 'bg-white dark:bg-black border-gray-200 dark:border-neutral-800 hover:border-orange-300 dark:hover:border-orange-700'
           }`}
         >
-          <div className="flex items-center justify-between text-orange-700 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center justify-between text-orange-700 dark:text-orange-400 text-xs font-semibold uppercase tracking-wider">
             <span>16–30 Days Overdue</span>
             <AlertTriangle className="w-4 h-4" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mt-2">
-            {bucket16_30.length} <span className="text-xs font-normal text-gray-500">Accounts</span>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+            {bucket16_30.length} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">Accounts</span>
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
             Total: {formatETB(bucket16_30.reduce((sum, s) => sum + s.amount, 0))}
           </p>
         </div>
@@ -277,30 +277,30 @@ Senna Commerce Billing Dept.`;
           onClick={() => setAgingTab(agingTab === '30+' ? 'ALL' : '30+')}
           className={`p-5 rounded-2xl border transition-all cursor-pointer ${
             agingTab === '30+' 
-              ? 'bg-rose-50/60 border-rose-300 ring-2 ring-rose-200' 
-              : 'bg-white border-gray-200 hover:border-rose-300'
+              ? 'bg-rose-50/60 dark:bg-rose-950/40 border-rose-300 dark:border-rose-700 ring-2 ring-rose-200 dark:ring-rose-900' 
+              : 'bg-white dark:bg-black border-gray-200 dark:border-neutral-800 hover:border-rose-300 dark:hover:border-rose-700'
           }`}
         >
-          <div className="flex items-center justify-between text-rose-700 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center justify-between text-rose-700 dark:text-rose-400 text-xs font-semibold uppercase tracking-wider">
             <span>30+ Days Overdue</span>
             <ShieldAlert className="w-4 h-4" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 mt-2">
-            {bucket30Plus.length} <span className="text-xs font-normal text-gray-500">Accounts</span>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+            {bucket30Plus.length} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">Accounts</span>
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
             Total: {formatETB(bucket30Plus.reduce((sum, s) => sum + s.amount, 0))}
           </p>
         </div>
       </div>
 
       {/* Main Table Container */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xs overflow-hidden">
         {/* Table Controls Header */}
-        <div className="p-5 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
+        <div className="p-5 border-b border-gray-200 dark:border-neutral-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50 dark:bg-black">
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-semibold text-gray-900">Overdue Subscribers Directory</h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-mono">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Overdue Subscribers Directory</h2>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 font-mono">
               {displayedSubscribers.length} Overdue
             </span>
           </div>
@@ -308,18 +308,18 @@ Senna Commerce Billing Dept.`;
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Input */}
             <div className="relative min-w-[200px]">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Filter by name, phone, or Telegram..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-gray-900 placeholder:text-gray-400"
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-black border border-gray-300 dark:border-neutral-800 rounded-xl focus:outline-none focus:border-[#184528] focus:ring-2 focus:ring-[#184528] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
               />
             </div>
 
             {/* Aging Filter Pills */}
-            <div className="flex items-center p-1 bg-gray-100 rounded-xl border border-gray-200 text-xs font-medium">
+            <div className="flex items-center p-1 bg-gray-100 dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-800 text-xs font-medium">
               {[
                 { id: 'ALL', label: 'All Overdue' },
                 { id: '1-15', label: '1–15 Days' },
@@ -331,8 +331,8 @@ Senna Commerce Billing Dept.`;
                   onClick={() => setAgingTab(tab.id as any)}
                   className={`px-3 py-1 rounded-lg transition-all text-xs ${
                     agingTab === tab.id
-                      ? 'bg-white text-gray-900 shadow-xs font-semibold'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-[#184528] text-white shadow-xs font-semibold'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-[#184528] dark:hover:text-white'
                   }`}
                 >
                   {tab.label}
@@ -346,11 +346,11 @@ Senna Commerce Billing Dept.`;
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-100/80 text-gray-700 font-semibold uppercase tracking-wider">
+              <tr className="border-b border-gray-200 dark:border-neutral-800 bg-gray-100/80 dark:bg-black text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
                 <th className="py-3.5 px-4 w-10 text-center">
-                  <button onClick={handleSelectAll} className="text-gray-500 hover:text-gray-900">
+                  <button onClick={handleSelectAll} className="text-gray-500 dark:text-gray-400 hover:text-[#184528] dark:hover:text-white">
                     {selectedIds.length > 0 && selectedIds.length === displayedSubscribers.length ? (
-                      <CheckSquare className="w-4 h-4 text-gray-900" />
+                      <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
                     ) : (
                       <Square className="w-4 h-4" />
                     )}
@@ -365,14 +365,14 @@ Senna Commerce Billing Dept.`;
                 <th className="py-3.5 px-4 text-right">Dunning Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
               {displayedSubscribers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500 dark:text-gray-400">
                     <div className="flex flex-col items-center gap-2">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                      <p className="text-sm font-medium text-gray-900">No overdue accounts in this view!</p>
-                      <p className="text-xs text-gray-500">All subscriber accounts are current and up to date.</p>
+                      <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">No overdue accounts in this view!</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">All subscriber accounts are current and up to date.</p>
                     </div>
                   </td>
                 </tr>
@@ -383,28 +383,28 @@ Senna Commerce Billing Dept.`;
                   const normalizedPhone = normalizeETPhone(sub.phone);
                   const displayPhone = formatPhoneDisplay(sub.phone);
 
-                  let agingBadgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+                  let agingBadgeClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60';
                   if (daysOverdue > 15 && daysOverdue <= 30) {
-                    agingBadgeClass = 'bg-orange-50 text-orange-700 border-orange-200';
+                    agingBadgeClass = 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/60';
                   } else if (daysOverdue > 30) {
-                    agingBadgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                    agingBadgeClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60';
                   }
 
                   return (
                     <tr 
                       key={sub.id} 
-                      className={`hover:bg-gray-50/80 transition-colors ${
-                        isSelected ? 'bg-sky-50/50' : ''
+                      className={`hover:bg-gray-50/80 dark:hover:bg-neutral-800/50 transition-colors ${
+                        isSelected ? 'bg-sky-50/50 dark:bg-sky-950/30' : ''
                       }`}
                     >
                       {/* Checkbox */}
                       <td className="py-4 px-4 text-center">
                         <button 
                           onClick={() => handleToggleSelect(sub.id)}
-                          className="text-gray-400 hover:text-gray-900"
+                          className="text-gray-400 dark:text-gray-500 hover:text-[#184528] dark:hover:text-white"
                         >
                           {isSelected ? (
-                            <CheckSquare className="w-4 h-4 text-gray-900" />
+                            <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
                           ) : (
                             <Square className="w-4 h-4" />
                           )}
@@ -413,29 +413,29 @@ Senna Commerce Billing Dept.`;
 
                       {/* Name & Plan */}
                       <td className="py-4 px-4">
-                        <div className="font-semibold text-gray-900 text-sm">{sub.name}</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">{sub.planName}</div>
+                        <div className="font-semibold text-gray-900 dark:text-white text-sm">{sub.name}</div>
+                        <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sub.planName}</div>
                       </td>
 
                       {/* Phone */}
-                      <td className="py-4 px-4 font-mono text-gray-700">
+                      <td className="py-4 px-4 font-mono text-gray-700 dark:text-gray-300">
                         <div>{displayPhone}</div>
-                        <div className="text-[10px] text-gray-500">ET: {normalizedPhone}</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400">ET: {normalizedPhone}</div>
                       </td>
 
                       {/* Telegram ID */}
                       <td className="py-4 px-4">
                         {sub.telegramChatId ? (
-                          <span className="font-mono text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 text-[11px]">
+                          <span className="font-mono text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded border border-sky-200 dark:border-sky-800/60 text-[11px]">
                             {sub.telegramChatId}
                           </span>
                         ) : (
-                          <span className="text-[11px] text-rose-600 italic">No Chat ID</span>
+                          <span className="text-[11px] text-rose-600 dark:text-rose-400 italic">No Chat ID</span>
                         )}
                       </td>
 
                       {/* Amount */}
-                      <td className="py-4 px-4 font-bold text-rose-600 whitespace-nowrap">
+                      <td className="py-4 px-4 font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap">
                         {formatETB(sub.amount)}
                       </td>
 
@@ -448,7 +448,7 @@ Senna Commerce Billing Dept.`;
                       </td>
 
                       {/* Due Date */}
-                      <td className="py-4 px-4 text-gray-500 whitespace-nowrap">
+                      <td className="py-4 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                         {sub.nextBillingDate}
                       </td>
 
@@ -458,7 +458,7 @@ Senna Commerce Billing Dept.`;
                           {/* Send Telegram Reminder */}
                           <button
                             onClick={() => onSendTelegram(sub)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg transition-colors text-xs font-medium"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/80 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/80 rounded-lg transition-colors text-xs font-medium"
                             title="Send Telegram Dunning Alert"
                           >
                             <Send className="w-3.5 h-3.5" />
@@ -468,7 +468,7 @@ Senna Commerce Billing Dept.`;
                           {/* Settle / Simulate Payment */}
                           <button
                             onClick={() => onSimulatePayment(sub)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg transition-colors text-xs font-medium"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 rounded-lg transition-colors text-xs font-medium"
                             title="Verify payment and settle arrears"
                           >
                             <CreditCard className="w-3.5 h-3.5" />

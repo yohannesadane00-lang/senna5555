@@ -106,79 +106,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Sync Firebase Auth State
   useEffect(() => {
-    let unsub: (() => void) | null = null;
-    try {
-      unsub = onAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
-        if (fbUser) {
-          try {
-            await fbUser.reload();
-          } catch (e) {
-            console.warn('Could not reload fbUser in auth listener:', e);
-          }
+    const unsubscribe = onAuthStateChanged(auth, (fbUser: FirebaseUser | null) => {
+      if (fbUser) {
+        if (fbUser.emailVerified) {
+          const uid = fbUser.uid;
+          const storedOrgName =
+            fbUser.displayName ||
+            localStorage.getItem(`senna_org_name_${uid}`) ||
+            'My Organization';
 
-          if (fbUser.emailVerified) {
-            const uid = fbUser.uid;
-            const storedOrgName =
-              fbUser.displayName ||
-              localStorage.getItem(`senna_org_name_${uid}`) ||
+          const mappedUser: AuthUser = {
+            id: uid,
+            uid,
+            email: fbUser.email || '',
+            emailVerified: true,
+            user_metadata: {
+              business_name: storedOrgName,
+              organization_name: storedOrgName,
+            },
+          };
+
+          setUser(mappedUser);
+          setOrganizationId(uid);
+          setOrganizationName(storedOrgName);
+
+          // Scope storage keys specifically to this user UID
+          localStorage.setItem('senna_org_id', uid);
+          localStorage.setItem('senna_org_name', storedOrgName);
+          localStorage.setItem(`senna_org_name_${uid}`, storedOrgName);
+
+          setLoading(false);
+
+          // Non-blocking background sync for profile updates
+          fbUser.reload().catch((e) => console.warn('Background reload warning:', e));
+        } else {
+          // Unverified user — purge session state completely
+          resetAuthState();
+          setLoading(false);
+        }
+      } else {
+        // Check for stored demo session
+        const storedDemo = localStorage.getItem('senna_demo_user');
+        if (storedDemo) {
+          try {
+            const parsed = JSON.parse(storedDemo);
+            const orgId = parsed.id || parsed.uid || 'demo-org-id';
+            const orgName =
+              parsed.user_metadata?.business_name ||
               'My Organization';
 
-            const mappedUser: AuthUser = {
-              id: uid,
-              uid,
-              email: fbUser.email || '',
-              emailVerified: true,
-              user_metadata: {
-                business_name: storedOrgName,
-                organization_name: storedOrgName,
-              },
-            };
-
-            setUser(mappedUser);
-            setOrganizationId(uid);
-            setOrganizationName(storedOrgName);
-            
-            // Scope storage keys specifically to this user UID
-            localStorage.setItem('senna_org_id', uid);
-            localStorage.setItem('senna_org_name', storedOrgName);
-            localStorage.setItem(`senna_org_name_${uid}`, storedOrgName);
-          } else {
-            // Unverified user — purge session state completely
+            setUser(parsed);
+            setOrganizationId(orgId);
+            setOrganizationName(orgName);
+            localStorage.setItem('senna_org_id', orgId);
+            localStorage.setItem('senna_org_name', orgName);
+          } catch {
             resetAuthState();
           }
         } else {
-          // Check for stored demo session
-          const storedDemo = localStorage.getItem('senna_demo_user');
-          if (storedDemo) {
-            try {
-              const parsed = JSON.parse(storedDemo);
-              const orgId = parsed.id || parsed.uid || 'demo-org-id';
-              const orgName =
-                parsed.user_metadata?.business_name ||
-                'My Organization';
-
-              setUser(parsed);
-              setOrganizationId(orgId);
-              setOrganizationName(orgName);
-              localStorage.setItem('senna_org_id', orgId);
-              localStorage.setItem('senna_org_name', orgName);
-            } catch {
-              resetAuthState();
-            }
-          } else {
-            resetAuthState();
-          }
+          resetAuthState();
         }
         setLoading(false);
-      });
-    } catch (err) {
-      console.warn('Firebase onAuthStateChanged error:', err);
-      resetAuthState();
-      setLoading(false);
-    }
+      }
+    });
 
     return () => {
-      if (unsub) unsub();
+      unsubscribe();
     };
   }, []);
 
@@ -364,6 +357,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Firebase signOut error:', err);
     } finally {
       resetAuthState();
+      window.location.href = window.location.origin;
     }
   };
 
