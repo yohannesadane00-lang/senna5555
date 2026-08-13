@@ -11,7 +11,8 @@ import { AuthScreen } from './components/AuthScreen';
 import { useAuth } from './context/AuthContext';
 import { useDataContext } from './context/DataContext';
 import { useTheme } from './context/ThemeContext';
-import { auth } from './lib/firebase';
+import { auth, db } from './lib/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { normalizeETPhone } from './utils';
 import { Menu, Plus, CheckCircle2, AlertCircle, LogOut, Loader2, Building2, Sun, Moon } from 'lucide-react';
 
@@ -242,15 +243,22 @@ Thank you for your business!`;
   };
 
   // CRUD Handler: Add Subscriber
-  const handleAdd = (newSubData: Omit<Subscriber, 'id'> & { id?: string }) => {
+  const handleAdd = async (newSubData: Omit<Subscriber, 'id'> & { id?: string; userId?: string; organization_id?: string }) => {
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
     const nextBillingDate = thirtyDaysFromNow.toISOString().split('T')[0];
 
-    const randomId = newSubData.id || `sub_${Math.random().toString(36).substring(2, 9)}`;
+    const activeUid = currentUserId || newSubData.userId || newSubData.organization_id || auth.currentUser?.uid || '';
+
+    // Generate real auto-generated Firestore document ID or use existing
+    const newDocRef = newSubData.id && !newSubData.id.startsWith('sub_')
+      ? doc(db, 'subscribers', newSubData.id)
+      : doc(collection(db, 'subscribers'));
+    
+    const realDocId = newDocRef.id;
 
     const newSubscriber: Subscriber = {
-      id: randomId,
+      id: realDocId,
       name: newSubData.name.trim(),
       phone: normalizeETPhone(newSubData.phone),
       telegramChatId: (newSubData.telegramChatId || '').replace(/[@\s]/g, ''),
@@ -259,20 +267,22 @@ Thank you for your business!`;
       status: 'Pending',
       nextBillingDate: nextBillingDate,
       lastPaymentDate: new Date().toISOString().split('T')[0],
-      organization_id: currentUserId,
+      organization_id: activeUid,
+      userId: activeUid,
     };
 
-    setSubscribers((prev) => [newSubscriber, ...prev]);
+    setSubscribers((prev) => [newSubscriber, ...prev.filter((s) => s.id !== realDocId)]);
 
-    persistSubscriber(newSubscriber);
+    await persistSubscriber(newSubscriber);
 
     showToast(`Added subscriber: ${newSubscriber.name}`);
   };
 
   // CRUD Handler: Edit Subscriber
-  const handleEdit = (updatedData: Omit<Subscriber, 'id'> & { id?: string }) => {
+  const handleEdit = async (updatedData: Omit<Subscriber, 'id'> & { id?: string; userId?: string; organization_id?: string }) => {
     if (!updatedData.id) return;
 
+    const activeUid = currentUserId || updatedData.userId || updatedData.organization_id || auth.currentUser?.uid || '';
     const normalizedPhone = normalizeETPhone(updatedData.phone);
     const cleanTelegram = (updatedData.telegramChatId || '').replace(/[@\s]/g, '');
 
@@ -287,26 +297,27 @@ Thank you for your business!`;
       status: updatedData.status,
       nextBillingDate: updatedData.nextBillingDate,
       lastPaymentDate: updatedData.lastPaymentDate,
-      organization_id: currentUserId,
+      organization_id: activeUid,
+      userId: activeUid,
     };
 
     setSubscribers((prev) =>
       prev.map((s) => (s.id === updatedData.id ? updatedSubscriber : s))
     );
 
-    persistSubscriber(updatedSubscriber);
+    await persistSubscriber(updatedSubscriber);
 
     showToast(`Saved changes for ${updatedSubscriber.name}`);
   };
 
   // Save Dispatcher for Modal
-  const handleSaveSubscriber = (
-    subData: Omit<Subscriber, 'id'> & { id?: string }
+  const handleSaveSubscriber = async (
+    subData: Omit<Subscriber, 'id'> & { id?: string; userId?: string; organization_id?: string }
   ) => {
     if (subData.id && subscribers.some((s) => s.id === subData.id)) {
-      handleEdit(subData);
+      await handleEdit(subData);
     } else {
-      handleAdd(subData);
+      await handleAdd(subData);
     }
   };
 
@@ -515,6 +526,7 @@ Thank you for your business!`;
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveSubscriber}
         initialData={editingSubscriber}
+        userId={currentUserId}
       />
 
       {/* Sign Out Confirmation Modal */}

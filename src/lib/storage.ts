@@ -53,8 +53,11 @@ export const removeSecureItem = (key: string, uid: string | undefined): void => 
 
 export const clearAllLocalStorage = (): void => {
   try {
-    localStorage.clear();
+    localStorage.removeItem('senna_org_id');
+    localStorage.removeItem('senna_org_name');
+    localStorage.removeItem('senna_demo_user');
+    localStorage.removeItem('senna_pending_org_name');
   } catch (err) {
-    console.warn('[SecureStorage] Error clearing local storage:', err);
+    console.warn('[SecureStorage] Error clearing session storage:', err);
   }
 };

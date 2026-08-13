@@ -31,6 +31,7 @@ export interface Subscriber {
   nextBillingDate: string;
   lastPaymentDate: string;
   organization_id?: string;
+  userId?: string;
   created_at?: string;
   updated_at?: string;
 }

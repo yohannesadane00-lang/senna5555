@@ -98,7 +98,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Central Helper to reset all state cleanly
   const resetAuthState = () => {
-    clearAllLocalStorage();
+    try {
+      localStorage.removeItem('senna_org_id');
+      localStorage.removeItem('senna_org_name');
+      localStorage.removeItem('senna_demo_user');
+    } catch (e) {
+      console.warn('Error clearing session storage:', e);
+    }
     setUser(null);
     setOrganizationId('');
     setOrganizationName('');

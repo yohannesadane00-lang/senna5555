@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Subscriber, SubscriptionStatus } from '../types';
 import { normalizeETPhone } from '../utils';
+import { useAuth } from '../context/AuthContext';
 import { X, Phone, Send, User, Info } from 'lucide-react';
 
 interface SubscriberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (subscriber: Omit<Subscriber, 'id'> & { id?: string }) => void;
+  onSave: (subscriber: Omit<Subscriber, 'id'> & { id?: string; userId?: string; organization_id?: string }) => void;
   initialData?: Subscriber | null;
+  userId?: string;
 }
 
 export const SubscriberModal: React.FC<SubscriberModalProps> = ({
@@ -15,7 +17,11 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
   onClose,
   onSave,
   initialData,
+  userId,
 }) => {
+  const { user, organizationId } = useAuth();
+  const currentUid = userId || user?.uid || organizationId || '';
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [telegramChatId, setTelegramChatId] = useState('');
@@ -64,6 +70,8 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
     if (initialData?.id) {
       onSave({
         id: initialData.id,
+        userId: currentUid,
+        organization_id: currentUid,
         name: name.trim(),
         phone: normalizedPhone,
         telegramChatId: cleanTelegram,
@@ -74,9 +82,9 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
         lastPaymentDate: initialData.lastPaymentDate || new Date().toISOString().split('T')[0],
       });
     } else {
-      const randomStringId = Math.random().toString(36).substring(2, 9) + Date.now().toString(36).substring(4);
       onSave({
-        id: randomStringId,
+        userId: currentUid,
+        organization_id: currentUid,
         name: name.trim(),
         phone: normalizedPhone,
         telegramChatId: cleanTelegram,

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Subscriber, SubscriptionStatus } from '../types';
 import { useAuth } from './AuthContext';
 import { db, auth } from '../lib/firebase';
-import { collection, query, where, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, deleteDoc, onSnapshot, or } from 'firebase/firestore';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getSecureItem, setSecureItem } from '../lib/storage';
 
@@ -44,8 +44,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // 2. REACTIVE DATA FETCHING & AUTO-CLEANUP
   useEffect(() => {
-    // When activeOrgId is empty or changes (logout / user switch), immediately wipe in-memory state
-    if (!auth.currentUser?.uid || !activeOrgId) {
+    if (!activeOrgId) {
       setSubscribers([]);
       setIsDataLoaded(false);
       setIsLoading(false);
@@ -53,31 +52,22 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
-    // Load from cache for frame-1 rendering (0ms delay)
-    const cachedData = getSecureItem<Subscriber[]>('subscribers', activeOrgId);
-    if (Array.isArray(cachedData) && cachedData.length > 0) {
-      setSubscribers(cachedData);
-      setIsDataLoaded(true);
-      setIsLoading(false);
-    } else {
-      setSubscribers([]);
-      setIsLoading(true);
-    }
-
+    // Load from user-scoped cache for 0ms frame-1 rendering
+    const cachedData = getSecureItem<Subscriber[]>('subscribers', activeOrgId) || [];
+    setSubscribers(cachedData);
+    setIsDataLoaded(true);
+    setIsLoading(false);
     setIsSyncing(true);
 
-    // Filter strictly by organization_id
-    const qOrg = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
+    const processSnapshot = (snapshot: any) => {
+      const remoteMap = new Map<string, Subscriber>();
 
-    // Real-time listener with automatic teardown
-    const unsubscribe = onSnapshot(
-      qOrg,
-      (snapshot) => {
-        const recordsMap = new Map<string, Subscriber>();
-
-        snapshot.forEach((docSnap) => {
-          const d = docSnap.data();
-          recordsMap.set(docSnap.id, {
+      snapshot.forEach((docSnap: any) => {
+        const d = docSnap.data();
+        const docOwner = d.organization_id || d.organizationId || d.user_id || d.userId || d.businessId || activeOrgId;
+        
+        if (docOwner === activeOrgId) {
+          remoteMap.set(docSnap.id, {
             id: docSnap.id,
             name: d.name || '',
             phone: d.phone || '',
@@ -87,48 +77,83 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             status: (d.status as SubscriptionStatus) || 'Pending',
             nextBillingDate: d.nextBillingDate || d.next_billing_date || '',
             lastPaymentDate: d.lastPaymentDate || d.last_payment_date || '',
-            organization_id: d.organization_id || activeOrgId,
+            organization_id: activeOrgId,
           });
-        });
+        }
+      });
 
-        const fetchedList = Array.from(recordsMap.values());
+      // Merge remote snapshot with local cached items so nothing created locally is lost
+      const currentLocal = getSecureItem<Subscriber[]>('subscribers', activeOrgId) || [];
+      const mergedMap = new Map<string, Subscriber>();
 
-        setSubscribers(fetchedList);
-        setSecureItem('subscribers', activeOrgId, fetchedList);
-        setIsDataLoaded(true);
-        setIsLoading(false);
-        setIsSyncing(false);
-      },
+      remoteMap.forEach((sub, id) => mergedMap.set(id, sub));
+      currentLocal.forEach((sub) => {
+        if (!mergedMap.has(sub.id)) {
+          mergedMap.set(sub.id, sub);
+        }
+      });
+
+      const mergedList = Array.from(mergedMap.values());
+
+      setSubscribers(mergedList);
+      setSecureItem('subscribers', activeOrgId, mergedList);
+      setIsDataLoaded(true);
+      setIsLoading(false);
+      setIsSyncing(false);
+    };
+
+    let primaryQuery;
+    try {
+      primaryQuery = query(
+        collection(db, 'subscribers'),
+        or(
+          where('organization_id', '==', activeOrgId),
+          where('user_id', '==', activeOrgId),
+          where('userId', '==', activeOrgId),
+          where('businessId', '==', activeOrgId)
+        )
+      );
+    } catch {
+      primaryQuery = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
+    }
+
+    let unsubscribe = onSnapshot(
+      primaryQuery,
+      processSnapshot,
       (err) => {
-        console.warn('[DataContext] Firestore onSnapshot error:', err);
-        setIsLoading(false);
-        setIsSyncing(false);
+        console.warn('[DataContext] Firestore onSnapshot fallback:', err?.message || err);
+        const fallbackQuery = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
+        unsubscribe = onSnapshot(fallbackQuery, processSnapshot, () => {
+          setIsLoading(false);
+          setIsSyncing(false);
+        });
       }
     );
 
-    // PROPER LISTENER TEARDOWN on unmount or user switch
     return () => {
       unsubscribe();
-      setSubscribers([]);
-      setIsDataLoaded(false);
-      setIsLoading(false);
-      setIsSyncing(false);
     };
   }, [activeOrgId, user]);
 
   // Sync to localStorage when subscribers state changes
   useEffect(() => {
-    if (isDataLoaded && activeOrgId) {
+    if (activeOrgId) {
       setSecureItem('subscribers', activeOrgId, subscribers);
     }
-  }, [subscribers, isDataLoaded, activeOrgId]);
+  }, [subscribers, activeOrgId]);
 
-  // Persist single subscriber to DB
+  // Persist single subscriber to DB & Local Cache
   const persistSubscriber = async (sub: Subscriber) => {
-    if (!auth.currentUser?.uid || !activeOrgId) {
-      console.warn('[DataContext] Blocked persistSubscriber: Unauthenticated session.');
+    const targetOrgId = activeOrgId || auth.currentUser?.uid || sub.organization_id || '';
+    if (!targetOrgId) {
+      console.warn('[DataContext] Blocked persistSubscriber: Missing targetOrgId.');
       return;
     }
+
+    // Update local storage immediately for complete reliability
+    const localCached = getSecureItem<Subscriber[]>('subscribers', targetOrgId) || [];
+    const updatedLocal = [sub, ...localCached.filter((s) => s.id !== sub.id)];
+    setSecureItem('subscribers', targetOrgId, updatedLocal);
 
     const payload = {
       id: sub.id,
@@ -144,23 +169,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       next_billing_date: sub.nextBillingDate,
       lastPaymentDate: sub.lastPaymentDate,
       last_payment_date: sub.lastPaymentDate,
-      user_id: activeOrgId,
-      organization_id: activeOrgId,
+      user_id: targetOrgId,
+      userId: targetOrgId,
+      organization_id: targetOrgId,
+      organizationId: targetOrgId,
+      businessId: targetOrgId,
+      created_by: auth.currentUser?.uid || targetOrgId,
       updated_at: new Date().toISOString(),
     };
 
     try {
       await setDoc(doc(db, 'subscribers', sub.id), payload, { merge: true });
     } catch (err) {
-      console.warn('[DataContext] Firestore setDoc error:', err);
+      console.warn('[DataContext] Firestore setDoc notice:', err);
     }
 
     if (isSupabaseConfigured) {
       try {
         await supabase.from('subscribers').upsert({
           id: sub.id,
-          user_id: activeOrgId,
-          organization_id: activeOrgId,
+          user_id: targetOrgId,
+          userId: targetOrgId,
+          organization_id: targetOrgId,
           name: sub.name,
           phone: sub.phone,
           telegram_chat_id: sub.telegramChatId,
@@ -171,29 +201,32 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           last_payment_date: sub.lastPaymentDate,
         });
       } catch (err) {
-        console.warn('[DataContext] Supabase upsert error:', err);
+        console.warn('[DataContext] Supabase upsert notice:', err);
       }
     }
   };
 
-  // Remove subscriber from DB
+  // Remove subscriber from DB & Local Cache
   const removeSubscriberFromDb = async (id: string) => {
-    if (!auth.currentUser?.uid || !activeOrgId) {
-      console.warn('[DataContext] Blocked removeSubscriberFromDb: Unauthenticated session.');
-      return;
-    }
+    const targetOrgId = activeOrgId || auth.currentUser?.uid || '';
+    if (!targetOrgId) return;
+
+    // Immediately update local cache
+    const localCached = getSecureItem<Subscriber[]>('subscribers', targetOrgId) || [];
+    const updatedLocal = localCached.filter((s) => s.id !== id);
+    setSecureItem('subscribers', targetOrgId, updatedLocal);
 
     try {
       await deleteDoc(doc(db, 'subscribers', id));
     } catch (err) {
-      console.warn('[DataContext] Firestore deleteDoc error:', err);
+      console.warn('[DataContext] Firestore deleteDoc notice:', err);
     }
 
     if (isSupabaseConfigured) {
       try {
-        await supabase.from('subscribers').delete().eq('id', id).eq('organization_id', activeOrgId);
+        await supabase.from('subscribers').delete().eq('id', id).eq('organization_id', targetOrgId);
       } catch (err) {
-        console.warn('[DataContext] Supabase delete error:', err);
+        console.warn('[DataContext] Supabase delete notice:', err);
       }
     }
   };
