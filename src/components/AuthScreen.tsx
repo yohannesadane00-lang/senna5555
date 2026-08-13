@@ -210,31 +210,31 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-slate-950 text-slate-100">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-gray-900">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Brand Header */}
         <div className="flex justify-center items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center text-sky-400 shadow-xl shadow-sky-500/10">
+          <div className="w-12 h-12 rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-md">
             <Building2 className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-extrabold text-white tracking-tight">Senna Commerce</span>
+          <span className="text-2xl font-extrabold text-gray-900 tracking-tight">Senna Commerce</span>
         </div>
-        <h2 className="mt-3 text-center text-sm font-medium text-slate-400">
-          Firebase Email/Password Auth & Verification Engine
+        <h2 className="mt-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+          B2B Subscription Management Portal
         </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <div className="bg-slate-800/90 backdrop-blur-md py-8 px-6 shadow-2xl rounded-2xl border border-slate-700/60 sm:px-10">
+        <div className="bg-white py-8 px-6 shadow-md rounded-2xl border border-gray-200 sm:px-10">
           {/* Tab Switcher */}
-          <div className="grid grid-cols-2 gap-1 p-1 bg-slate-900/90 rounded-xl border border-slate-700/60 mb-6">
+          <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100/80 rounded-xl border border-gray-200 mb-6">
             <button
               type="button"
               onClick={() => handleTabChange('signin')}
               className={`py-2 text-xs font-semibold rounded-lg transition-all duration-200 ${
                 activeTab === 'signin'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-900/40 font-bold border border-sky-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-gray-900 shadow-xs font-bold border border-gray-200'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Sign In
@@ -244,8 +244,8 @@ export const AuthScreen: React.FC = () => {
               onClick={() => handleTabChange('register')}
               className={`py-2 text-xs font-semibold rounded-lg transition-all duration-200 ${
                 activeTab === 'register'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-900/40 font-bold border border-sky-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-white text-gray-900 shadow-xs font-bold border border-gray-200'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Register Business
@@ -254,21 +254,21 @@ export const AuthScreen: React.FC = () => {
 
           {/* General Error Banner */}
           {generalError && (
-            <div className="mb-5 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl flex flex-col gap-2 text-rose-300 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex flex-col gap-2 text-rose-700 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <div className="leading-relaxed font-medium">{generalError}</div>
               </div>
 
               {/* Resend Verification Button directly in Error Banner if user is unverified */}
               {unverifiedEmail && (
-                <div className="pt-2 border-t border-rose-500/20 flex items-center justify-between">
-                  <span className="text-[11px] text-rose-300/80">Need a new link?</span>
+                <div className="pt-2 border-t border-rose-200 flex items-center justify-between">
+                  <span className="text-[11px] text-rose-600">Need a new link?</span>
                   <button
                     type="button"
                     onClick={handleResendEmail}
                     disabled={resendTimer > 0 || resendLoading}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 font-semibold text-[11px] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-100 hover:bg-rose-200 border border-rose-300 text-rose-800 font-semibold text-[11px] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {resendLoading ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -286,8 +286,8 @@ export const AuthScreen: React.FC = () => {
 
           {/* General Success Banner */}
           {successMessage && (
-            <div className="mb-5 p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-3 text-emerald-300 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="mb-5 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3 text-emerald-800 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div className="leading-relaxed font-medium">{successMessage}</div>
             </div>
           )}
@@ -295,21 +295,21 @@ export const AuthScreen: React.FC = () => {
           {/* SCREEN STEP: VERIFY EMAIL POST-REGISTRATION */}
           {screenStep === 'verify-email' ? (
             <div className="space-y-5 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-400/20 mx-auto flex items-center justify-center text-sky-400 shadow-lg shadow-sky-500/10">
+              <div className="w-14 h-14 rounded-2xl bg-sky-50 border border-sky-200 mx-auto flex items-center justify-center text-sky-700 shadow-xs">
                 <MailCheck className="w-7 h-7" />
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-base font-bold text-white">Verify Your Email Address</h3>
-                <p className="text-xs text-slate-300 leading-relaxed px-2">
+                <h3 className="text-base font-bold text-gray-900">Verify Your Email Address</h3>
+                <p className="text-xs text-gray-600 leading-relaxed px-2">
                   We sent a verification link to{' '}
-                  <span className="font-bold text-sky-400">{sanitizedEmail}</span>. Please check your inbox and click the link to activate your business account.
+                  <span className="font-bold text-gray-900">{sanitizedEmail}</span>. Please check your inbox and click the link to activate your business account.
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-900/80 rounded-xl border border-slate-700/60 text-xs text-slate-400 text-left space-y-2">
-                <div className="font-semibold text-slate-200 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-sky-400" />
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 text-left space-y-2">
+                <div className="font-semibold text-gray-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-sky-600" />
                   <span>Next Steps:</span>
                 </div>
                 <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed">
@@ -325,7 +325,7 @@ export const AuthScreen: React.FC = () => {
                   type="button"
                   onClick={handleResendEmail}
                   disabled={resendTimer > 0 || resendLoading}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-sky-600/20 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none transition-all"
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs rounded-xl shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {resendLoading ? (
                     <>
@@ -348,7 +348,7 @@ export const AuthScreen: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleTabChange('signin')}
-                  className="w-full inline-flex justify-center items-center gap-1.5 py-2.5 text-xs text-slate-400 hover:text-slate-200 font-medium transition-colors"
+                  className="w-full inline-flex justify-center items-center gap-1.5 py-2.5 text-xs text-gray-600 hover:text-gray-900 font-medium transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back to Sign In</span>
@@ -361,11 +361,11 @@ export const AuthScreen: React.FC = () => {
               {/* Business Name Field (Register Only) */}
               {activeTab === 'register' && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Business Name <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Business Name <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                       <Building2 className="w-4 h-4" />
                     </div>
                     <input
@@ -375,15 +375,15 @@ export const AuthScreen: React.FC = () => {
                       onChange={(e) => setBusinessName(e.target.value)}
                       onBlur={() => setBusinessNameTouched(true)}
                       placeholder="e.g. Abebe Logistics PLC"
-                      className={`w-full pl-10 pr-4 py-2.5 bg-slate-900 border rounded-xl text-slate-100 placeholder-slate-500 text-xs focus:outline-none transition-all ${
+                      className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-xs focus:outline-none transition-all ${
                         businessNameTouched && !businessName.trim()
-                          ? 'border-rose-500/80 focus:ring-2 focus:ring-rose-500/30'
-                          : 'border-slate-700/80 focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500'
+                          ? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
+                          : 'border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900'
                       }`}
                     />
                   </div>
                   {businessNameTouched && !businessName.trim() && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-rose-400 text-[11px] font-medium">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-rose-600 text-[11px] font-medium">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>Business name is required to register an account.</span>
                     </div>
@@ -393,11 +393,11 @@ export const AuthScreen: React.FC = () => {
 
               {/* Email Address Field */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Email Address <span className="text-rose-400">*</span>
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Email Address <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
@@ -407,15 +407,15 @@ export const AuthScreen: React.FC = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={() => setEmailTouched(true)}
                     placeholder="admin@company.com"
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-900 border rounded-xl text-slate-100 placeholder-slate-500 text-xs focus:outline-none transition-all ${
+                    className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-xs focus:outline-none transition-all ${
                       emailTouched && !isEmailValid
-                        ? 'border-rose-500/80 focus:ring-2 focus:ring-rose-500/30'
-                        : 'border-slate-700/80 focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500'
+                        ? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
+                        : 'border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900'
                     }`}
                   />
                 </div>
                 {emailTouched && email.trim().length > 0 && !isEmailValid && (
-                  <div className="mt-1.5 flex items-center gap-1.5 text-rose-400 text-[11px] font-medium">
+                  <div className="mt-1.5 flex items-center gap-1.5 text-rose-600 text-[11px] font-medium">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>Please enter a valid email address (e.g. name@domain.com).</span>
                   </div>
@@ -425,8 +425,8 @@ export const AuthScreen: React.FC = () => {
               {/* Password Field */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Password <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Password <span className="text-rose-500">*</span>
                   </label>
                   {activeTab === 'register' && password.length > 0 && (
                     <span className={`text-[10px] font-bold uppercase ${passwordStrength.textColor}`}>
@@ -435,7 +435,7 @@ export const AuthScreen: React.FC = () => {
                   )}
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -445,16 +445,16 @@ export const AuthScreen: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     onBlur={() => setPasswordTouched(true)}
                     placeholder="••••••••"
-                    className={`w-full pl-10 pr-10 py-2.5 bg-slate-900 border rounded-xl text-slate-100 placeholder-slate-500 text-xs focus:outline-none transition-all ${
+                    className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-xs focus:outline-none transition-all ${
                       activeTab === 'register' && passwordTouched && !isPasswordRulesMet
-                        ? 'border-amber-500/80 focus:ring-2 focus:ring-amber-500/30'
-                        : 'border-slate-700/80 focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500'
+                        ? 'border-amber-400 focus:ring-2 focus:ring-amber-200'
+                        : 'border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900'
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -464,48 +464,48 @@ export const AuthScreen: React.FC = () => {
                 {/* Password Strength Checklist (Register Tab) */}
                 {activeTab === 'register' && password.length > 0 && (
                   <div className="mt-2 space-y-1.5">
-                    <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden border border-slate-800">
+                    <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden border border-gray-200">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${passwordStrength.color}`}
                         style={{ width: passwordStrength.width }}
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[10px] text-slate-400">
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[10px] text-gray-500">
                       <div className="flex items-center gap-1">
                         {hasMinLength ? (
-                          <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <Check className="w-3 h-3 text-emerald-600 shrink-0" />
                         ) : (
-                          <span className="w-3 h-3 rounded-full border border-slate-600 inline-block shrink-0" />
+                          <span className="w-3 h-3 rounded-full border border-gray-300 inline-block shrink-0" />
                         )}
-                        <span className={hasMinLength ? 'text-slate-200 font-medium' : ''}>Min 8 chars</span>
+                        <span className={hasMinLength ? 'text-gray-900 font-medium' : ''}>Min 8 chars</span>
                       </div>
 
                       <div className="flex items-center gap-1">
                         {hasUppercase ? (
-                          <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <Check className="w-3 h-3 text-emerald-600 shrink-0" />
                         ) : (
-                          <span className="w-3 h-3 rounded-full border border-slate-600 inline-block shrink-0" />
+                          <span className="w-3 h-3 rounded-full border border-gray-300 inline-block shrink-0" />
                         )}
-                        <span className={hasUppercase ? 'text-slate-200 font-medium' : ''}>1 Uppercase (A-Z)</span>
+                        <span className={hasUppercase ? 'text-gray-900 font-medium' : ''}>1 Uppercase (A-Z)</span>
                       </div>
 
                       <div className="flex items-center gap-1">
                         {hasLowercase ? (
-                          <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <Check className="w-3 h-3 text-emerald-600 shrink-0" />
                         ) : (
-                          <span className="w-3 h-3 rounded-full border border-slate-600 inline-block shrink-0" />
+                          <span className="w-3 h-3 rounded-full border border-gray-300 inline-block shrink-0" />
                         )}
-                        <span className={hasLowercase ? 'text-slate-200 font-medium' : ''}>1 Lowercase (a-z)</span>
+                        <span className={hasLowercase ? 'text-gray-900 font-medium' : ''}>1 Lowercase (a-z)</span>
                       </div>
 
                       <div className="flex items-center gap-1">
                         {hasNumber ? (
-                          <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <Check className="w-3 h-3 text-emerald-600 shrink-0" />
                         ) : (
-                          <span className="w-3 h-3 rounded-full border border-slate-600 inline-block shrink-0" />
+                          <span className="w-3 h-3 rounded-full border border-gray-300 inline-block shrink-0" />
                         )}
-                        <span className={hasNumber ? 'text-slate-200 font-medium' : ''}>1 Number (0-9)</span>
+                        <span className={hasNumber ? 'text-gray-900 font-medium' : ''}>1 Number (0-9)</span>
                       </div>
                     </div>
                   </div>
@@ -515,11 +515,11 @@ export const AuthScreen: React.FC = () => {
               {/* Confirm Password Field (Register Only) */}
               {activeTab === 'register' && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Confirm Password <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Confirm Password <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
@@ -529,18 +529,18 @@ export const AuthScreen: React.FC = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       onBlur={() => setConfirmPasswordTouched(true)}
                       placeholder="••••••••"
-                      className={`w-full pl-10 pr-10 py-2.5 bg-slate-900 border rounded-xl text-slate-100 placeholder-slate-500 text-xs focus:outline-none transition-all ${
+                      className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-gray-900 placeholder-gray-400 text-xs focus:outline-none transition-all ${
                         confirmPasswordTouched && !isConfirmPasswordMatching
-                          ? 'border-rose-500/80 focus:ring-2 focus:ring-rose-500/30'
+                          ? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
                           : confirmPassword.length > 0 && isConfirmPasswordMatching
-                          ? 'border-emerald-500/80 focus:ring-2 focus:ring-emerald-500/30'
-                          : 'border-slate-700/80 focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500'
+                          ? 'border-emerald-400 focus:ring-2 focus:ring-emerald-200'
+                          : 'border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700 transition-colors"
                       aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
                       {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -548,14 +548,14 @@ export const AuthScreen: React.FC = () => {
                   </div>
 
                   {confirmPasswordTouched && confirmPassword.length > 0 && !isConfirmPasswordMatching && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-rose-400 text-[11px] font-medium">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-rose-600 text-[11px] font-medium">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       <span>Passwords do not match. Please re-enter.</span>
                     </div>
                   )}
 
                   {confirmPassword.length > 0 && isConfirmPasswordMatching && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-emerald-400 text-[11px] font-medium">
+                    <div className="mt-1.5 flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium">
                       <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                       <span>Passwords match perfectly.</span>
                     </div>
@@ -568,7 +568,7 @@ export const AuthScreen: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || !isFormValid}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-sky-600/20 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none transition-all"
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold text-xs rounded-xl shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <>
@@ -583,23 +583,23 @@ export const AuthScreen: React.FC = () => {
                 </button>
 
                 {/* Quick Demo Test Mode Shortcuts */}
-                <div className="pt-2 border-t border-slate-700/50">
-                  <div className="text-[11px] text-slate-400 font-medium mb-2 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <div className="pt-2 border-t border-gray-200">
+                  <div className="text-[11px] text-gray-500 font-medium mb-2 flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     <span>Quick Test Mode (Instant Session)</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => handleUseDemo('demo.admin@senna.et', 'Senna Logistics PLC')}
-                      className="py-2 px-2 text-[11px] text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 rounded-xl transition-all font-medium truncate text-center"
+                      className="py-2 px-2 text-[11px] text-gray-800 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl transition-all font-medium truncate text-center"
                     >
                       ⚡ Demo Admin Login
                     </button>
                     <button
                       type="button"
                       onClick={() => handleUseDemo('kebede@senna.et', 'Kebede Trading PLC')}
-                      className="py-2 px-2 text-[11px] text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 rounded-xl transition-all font-medium truncate text-center"
+                      className="py-2 px-2 text-[11px] text-gray-800 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl transition-all font-medium truncate text-center"
                     >
                       ⚡ Demo Merchant Login
                     </button>
@@ -610,8 +610,8 @@ export const AuthScreen: React.FC = () => {
           )}
 
           {/* Footer Badge */}
-          <div className="mt-6 pt-5 border-t border-slate-700/50 flex items-center justify-center gap-2 text-slate-400 text-xs">
-            <ShieldCheck className="w-4 h-4 text-sky-400" />
+          <div className="mt-6 pt-5 border-t border-gray-200 flex items-center justify-center gap-2 text-gray-500 text-xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>Firebase Auth Engine & Email Link Guard</span>
           </div>
         </div>

@@ -69,7 +69,7 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: 'spring', duration: 0.25, bounce: 0.05 }}
-            className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-black/80 p-6 z-10 text-slate-100 overflow-hidden"
+            className="relative w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-xl p-6 z-10 text-gray-900 overflow-hidden"
           >
             {/* Top Close Button */}
             <button
@@ -77,7 +77,7 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
                 if (!isSubmitting) onClose();
               }}
               disabled={isSubmitting}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 p-1.5 rounded-xl transition-colors disabled:opacity-50"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 hover:bg-gray-100 p-1.5 rounded-xl transition-colors disabled:opacity-50"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
@@ -86,28 +86,28 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
             {/* Modal Content */}
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-4">
               {/* Icon */}
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-6 h-6" />
               </div>
 
               {/* Title & Description */}
               <div className="space-y-1.5 w-full">
-                <h3 className="text-lg font-bold text-white tracking-tight">
+                <h3 className="text-lg font-bold text-gray-900 tracking-tight">
                   Sign Out
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   Are you sure you want to sign out? Any unsaved changes will be lost.
                 </p>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+            <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl transition-all disabled:opacity-50"
+                className="px-4 py-2.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl transition-all disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -115,7 +115,7 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
                 type="button"
                 onClick={handleConfirmSignOut}
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 active:bg-rose-700 rounded-xl transition-all shadow-lg shadow-rose-900/30 border border-rose-500/30 disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 active:bg-rose-800 rounded-xl transition-all shadow-xs border border-rose-700 disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <>

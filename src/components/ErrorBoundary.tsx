@@ -31,23 +31,23 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-slate-800 border border-slate-700/80 rounded-2xl p-6 shadow-2xl text-center">
-            <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-md text-center">
+            <div className="w-12 h-12 bg-rose-50 border border-rose-200 text-rose-600 rounded-xl flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h2 className="text-lg font-bold text-white mb-2">Something went wrong</h2>
-            <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Something went wrong</h2>
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
               An unexpected error occurred while loading the application view.
             </p>
             {this.state.error?.message && (
-              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 text-rose-300 text-xs font-mono mb-6 text-left break-words max-h-32 overflow-y-auto">
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 text-rose-700 text-xs font-mono mb-6 text-left break-words max-h-32 overflow-y-auto">
                 {this.state.error.message}
               </div>
             )}
             <button
               onClick={this.handleReload}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-500 text-white font-medium text-sm rounded-xl shadow-lg transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-900 hover:bg-gray-800 text-white font-medium text-sm rounded-xl shadow-xs transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Reload Application</span>

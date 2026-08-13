@@ -315,9 +315,9 @@ Thank you for your business!`;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-slate-300">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-700">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-gray-900" />
           <p className="text-sm font-medium">Restoring session...</p>
         </div>
       </div>
@@ -333,20 +333,20 @@ Thank you for your business!`;
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900 flex font-sans antialiased selection:bg-gray-900 selection:text-white">
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-5 right-5 z-50 text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200 border ${
+          className={`fixed bottom-5 right-5 z-50 text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200 border ${
             toast.type === 'error'
-              ? 'bg-rose-950 text-rose-200 border-rose-800 shadow-rose-950/50'
-              : 'bg-slate-900 text-white border-slate-700 shadow-slate-950/50'
+              ? 'bg-rose-50 text-rose-800 border-rose-200 shadow-rose-100'
+              : 'bg-white text-gray-900 border-gray-200 shadow-gray-200/80'
           }`}
         >
           {toast.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           )}
           <span>{toast.message}</span>
         </div>
@@ -364,27 +364,27 @@ Thank you for your business!`;
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-slate-950">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-gray-50">
         {/* Top Navbar Header */}
-        <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20">
+        <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"
+              className="md:hidden p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
               aria-label="Open navigation menu"
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:block font-mono">
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:block font-mono">
                 {currentTab === 'dashboard' && 'Executive Metrics Overview'}
                 {currentTab === 'subscribers' && 'Subscribers Directory Management'}
                 {currentTab === 'dunning' && 'Dunning & Arrears Engine'}
                 {currentTab === 'settings' && 'Platform & Bot Settings'}
               </div>
               {isSyncing && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-800/50 animate-pulse">
-                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200 animate-pulse">
+                  <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-600" />
                   <span>Syncing...</span>
                 </span>
               )}
@@ -394,31 +394,31 @@ Thank you for your business!`;
           <div className="flex items-center gap-2.5 sm:gap-3">
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl transition-all shadow-md shadow-sky-900/20 border border-sky-500/30"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all shadow-sm border border-gray-800"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Subscriber</span>
             </button>
 
-            <div className="w-px h-5 bg-slate-800 hidden sm:block" />
+            <div className="w-px h-5 bg-gray-200 hidden sm:block" />
 
             {/* Active Organization Business Name Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-950/80 border border-sky-800/80 text-sky-300 rounded-xl text-xs font-semibold shadow-inner">
-              <Building2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 border border-gray-200 text-gray-800 rounded-xl text-xs font-semibold shadow-xs">
+              <Building2 className="w-3.5 h-3.5 text-gray-600 shrink-0" />
               <span className="truncate max-w-[120px] sm:max-w-[180px]">{organizationName}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-sky-600 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-sky-400/40">
+              <div className="w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-gray-700">
                 {user?.email ? user.email.charAt(0).toUpperCase() : 'S'}
               </div>
               {user && (
                 <button
                   onClick={() => setIsSignOutModalOpen(true)}
                   title="Sign Out"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700/80 rounded-xl transition-colors border border-slate-700/80"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200/80 rounded-xl transition-colors border border-gray-200"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <LogOut className="w-3.5 h-3.5 text-gray-500 shrink-0" />
                   <span className="hidden sm:inline">Sign Out</span>
                 </button>
               )}
