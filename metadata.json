@@ -1,0 +1,6 @@
+{
+  "name": "Senna",
+  "description": "Minimalist B2B subscription management dashboard for businesses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
