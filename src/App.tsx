@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Subscriber, SubscriptionStatus, NavTab } from './types';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
@@ -40,6 +40,14 @@ export default function App() {
   const [editingSubscriber, setEditingSubscriber] = useState<Subscriber | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  // Hard-reset theme state to light mode and remove stale dark class
+  useEffect(() => {
+    localStorage.removeItem('theme');
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+  }, []);
 
   const handleConfirmLogout = async () => {
     await logout();
