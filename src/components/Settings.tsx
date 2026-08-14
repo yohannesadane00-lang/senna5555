@@ -200,7 +200,7 @@ export const Settings: React.FC<SettingsProps> = ({ botToken, onUpdateBotToken }
             <div className="p-3.5 bg-sky-50 dark:bg-sky-950/50 rounded-xl border border-sky-200 dark:border-sky-800/60 flex items-start gap-3">
               <BellRing className="w-4 h-4 text-sky-700 dark:text-sky-400 shrink-0 mt-0.5" />
               <div className="text-[11px] text-sky-900 dark:text-sky-200 leading-relaxed">
-                Subscribers receive automated dunning notices sent directly to their numeric Telegram Chat ID (e.g. <span className="font-mono text-sky-950 dark:text-sky-100 font-semibold">895535762</span>).
+                Subscribers receive automated dunning notices sent directly to their numeric Telegram Chat ID (e.g. <span className="font-mono text-sky-950 dark:text-sky-100 font-semibold">123456789</span>).
                 <br />
                 <strong className="text-sky-950 dark:text-sky-100 font-semibold">Crucial requirement:</strong> The end user <em>must</em> have tapped <span className="font-mono bg-sky-100 dark:bg-sky-900 px-1 py-0.5 rounded text-sky-900 dark:text-sky-100">/start</span> in the bot first, or Telegram blocks direct messages with a <code className="text-rose-600 dark:text-rose-400 font-mono">chat not found</code> error.
               </div>

@@ -106,8 +106,8 @@ export default function App() {
 
     if (!chatId || !isNumeric) {
       const promptText = !chatId
-        ? `No Telegram Chat ID found for ${subscriber.name}.\n\nNote: Telegram Bot API requires a numeric User ID (e.g. 895535762), not an @username.\nPlease enter their numeric Telegram Chat ID:`
-        : `'${subscriber.telegramChatId}' is a username handle. Telegram Bot API requires a numeric User ID (e.g. 895535762) to send direct messages.\n\nPlease enter the numeric Telegram Chat ID for ${subscriber.name}:`;
+        ? `No Telegram Chat ID found for ${subscriber.name}.\n\nNote: Telegram Bot API requires a numeric User ID (e.g. 123456789), not an @username.\nPlease enter their numeric Telegram Chat ID:`
+        : `'${subscriber.telegramChatId}' is a username handle. Telegram Bot API requires a numeric User ID (e.g. 123456789) to send direct messages.\n\nPlease enter the numeric Telegram Chat ID for ${subscriber.name}:`;
 
       const userInput = window.prompt(promptText);
 

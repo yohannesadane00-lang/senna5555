@@ -185,7 +185,7 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
               <Send className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder="e.g. 895535762 or username"
+                placeholder="e.g. 123456789 or username"
                 value={telegramChatId}
                 onChange={(e) => setTelegramChatId(e.target.value.replace(/[@\s]/g, ''))}
                 className="w-full pl-9 pr-3 py-2 bg-white dark:bg-black border border-gray-300 dark:border-neutral-800 rounded-xl focus:outline-none focus:border-[#184528] focus:ring-2 focus:ring-[#184528] text-sky-800 dark:text-sky-300 font-mono placeholder:text-gray-400 dark:placeholder:text-gray-500"
