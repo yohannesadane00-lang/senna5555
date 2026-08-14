@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavTab } from '../types';
 import { LayoutDashboard, Users, ShieldAlert, Settings, ShieldCheck, X, LogOut } from 'lucide-react';
+import logoImage from '../assets/logo.jpg';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -49,13 +50,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-black border-r border-gray-200/80 dark:border-neutral-800 w-64 p-5 select-none text-slate-900 dark:text-gray-200">
+    <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-black border-r border-gray-200/80 dark:border-neutral-800 w-72 sm:w-64 p-4 sm:p-5 select-none text-slate-900 dark:text-gray-200 overflow-y-auto">
       {/* Brand Header */}
-      <div className="flex items-center justify-between pb-6 mb-2 border-b border-gray-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between pb-5 sm:pb-6 mb-2 border-b border-gray-200 dark:border-neutral-800">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#184528] text-white flex items-center justify-center font-bold text-lg shadow-xs border border-[#12331b]">
-            S
-          </div>
+          <img
+            src={logoImage}
+            alt="Senna Logo"
+            referrerPolicy="no-referrer"
+            className="w-9 h-9 rounded-xl object-cover shadow-sm ring-1 ring-emerald-500/20"
+          />
           <div>
             <span className="text-lg font-extrabold text-black dark:text-white tracking-tight block leading-none">
               Senna
@@ -69,7 +73,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Mobile close button */}
         <button
           onClick={onToggleMobile}
-          className="md:hidden p-1.5 text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-neutral-900 rounded-lg"
+          className="md:hidden p-2 text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-neutral-900 rounded-xl"
+          aria-label="Close navigation"
         >
           <X className="w-5 h-5" />
         </button>

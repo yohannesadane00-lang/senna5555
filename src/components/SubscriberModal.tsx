@@ -108,8 +108,8 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xl max-w-lg w-full overflow-hidden text-gray-900 dark:text-gray-100">
-        <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-black">
+      <div className="relative z-10 bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden text-gray-900 dark:text-gray-100">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-black shrink-0">
           <div>
             <h3 className="text-base font-bold text-gray-900 dark:text-white">
               {initialData ? 'Edit Subscriber Account' : 'Add New B2B Subscriber'}
@@ -126,7 +126,7 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 text-xs overflow-y-auto flex-1">
           {/* Subscriber Name */}
           <div className="space-y-1">
             <label className="block font-semibold text-gray-700 dark:text-gray-300">

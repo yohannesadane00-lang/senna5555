@@ -15,6 +15,7 @@ import { auth, db } from './lib/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { normalizeETPhone } from './utils';
 import { Menu, Plus, CheckCircle2, AlertCircle, LogOut, Loader2, Building2, Sun, Moon } from 'lucide-react';
+import logoImage from './assets/logo.jpg';
 
 import { getSecureItem, setSecureItem } from './lib/storage';
 
@@ -398,46 +399,65 @@ Thank you for your business!`;
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f3f4f6] dark:bg-black">
         {/* Top Navbar Header */}
-        <header className="bg-[#f8f9fa]/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-neutral-800 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
-          <div className="flex items-center gap-3">
+        <header className="bg-[#f8f9fa]/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-neutral-800 px-3 sm:px-6 md:px-8 py-2.5 sm:py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg"
+              className="md:hidden p-2 -ml-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-xl transition-colors shrink-0"
               aria-label="Open navigation menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2">
-              <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:block font-mono">
-                {currentTab === 'dashboard' && 'Executive Metrics Overview'}
-                {currentTab === 'subscribers' && 'Subscribers Directory Management'}
-                {currentTab === 'dunning' && 'Dunning & Arrears Engine'}
-                {currentTab === 'settings' && 'Platform & Bot Settings'}
+            <img
+              src={logoImage}
+              alt="Senna Logo"
+              referrerPolicy="no-referrer"
+              className="w-7 h-7 rounded-lg object-cover md:hidden ring-1 ring-emerald-500/20 shadow-xs shrink-0"
+            />
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="text-xs font-bold text-gray-700 dark:text-gray-200 tracking-tight truncate font-mono">
+                <span className="sm:hidden">
+                  {currentTab === 'dashboard' && 'Dashboard'}
+                  {currentTab === 'subscribers' && 'Subscribers'}
+                  {currentTab === 'dunning' && 'Dunning'}
+                  {currentTab === 'settings' && 'Settings'}
+                </span>
+                <span className="hidden sm:inline uppercase text-gray-500 dark:text-gray-400">
+                  {currentTab === 'dashboard' && 'Executive Metrics Overview'}
+                  {currentTab === 'subscribers' && 'Subscribers Directory Management'}
+                  {currentTab === 'dunning' && 'Dunning & Arrears Engine'}
+                  {currentTab === 'settings' && 'Platform & Bot Settings'}
+                </span>
               </div>
               {isSyncing && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800/60 animate-pulse">
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-1.5 sm:px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800/60 animate-pulse shrink-0">
                   <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-600 dark:text-sky-400" />
-                  <span>Syncing...</span>
+                  <span className="hidden xs:inline">Syncing...</span>
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-[#184528] hover:bg-[#12331b] active:bg-[#0c2212] rounded-xl transition-all shadow-xs border border-[#184528] focus:outline-none focus:ring-2 focus:ring-[#184528]"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-white bg-[#184528] hover:bg-[#12331b] active:bg-[#0c2212] rounded-xl transition-all shadow-xs border border-[#184528] focus:outline-none focus:ring-2 focus:ring-[#184528]"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Add Subscriber</span>
+              <span className="hidden xs:inline sm:inline">Add Subscriber</span>
+              <span className="xs:hidden">Add</span>
             </button>
 
-            <div className="w-px h-5 bg-gray-200 dark:bg-neutral-800 hidden sm:block" />
+            {/* Active Organization Business Name Badge (Desktop / Tablet) */}
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#e8f0eb] dark:bg-[#184528]/30 border border-[#184528]/20 dark:border-emerald-800/40 text-[#184528] dark:text-emerald-300 rounded-xl text-xs font-semibold shadow-xs">
+              <Building2 className="w-3.5 h-3.5 text-[#184528] dark:text-emerald-400 shrink-0" />
+              <span className="truncate max-w-[140px] xl:max-w-[200px]">{organizationName}</span>
+            </div>
 
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#184528] dark:hover:text-emerald-400 bg-gray-100 dark:bg-black hover:bg-[#e8f0eb] dark:hover:bg-neutral-900 rounded-xl transition-all border border-gray-200 dark:border-neutral-800 shadow-xs active:scale-95"
+              className="p-1.5 sm:p-2 text-gray-600 dark:text-gray-300 hover:text-[#184528] dark:hover:text-emerald-400 bg-gray-100 dark:bg-black hover:bg-[#e8f0eb] dark:hover:bg-neutral-900 rounded-xl transition-all border border-gray-200 dark:border-neutral-800 shadow-xs active:scale-95"
               aria-label="Toggle theme"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
@@ -448,21 +468,18 @@ Thank you for your business!`;
               )}
             </button>
 
-            {/* Active Organization Business Name Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e8f0eb] dark:bg-[#184528]/30 border border-[#184528]/20 dark:border-emerald-800/40 text-[#184528] dark:text-emerald-300 rounded-xl text-xs font-semibold shadow-xs">
-              <Building2 className="w-3.5 h-3.5 text-[#184528] dark:text-emerald-400 shrink-0" />
-              <span className="truncate max-w-[120px] sm:max-w-[180px]">{organizationName}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[#184528] text-white text-xs font-bold flex items-center justify-center shrink-0 border border-[#12331b]">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div 
+                title={user?.email || organizationName}
+                className="w-7 h-7 rounded-full bg-[#184528] text-white text-xs font-bold flex items-center justify-center shrink-0 border border-[#12331b]"
+              >
                 {user?.email ? user.email.charAt(0).toUpperCase() : 'S'}
               </div>
               {user && (
                 <button
                   onClick={() => setIsSignOutModalOpen(true)}
                   title="Sign Out"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 bg-gray-100 dark:bg-black hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors border border-gray-200 dark:border-neutral-800"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 bg-gray-100 dark:bg-black hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors border border-gray-200 dark:border-neutral-800"
                 >
                   <LogOut className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 shrink-0" />
                   <span className="hidden sm:inline">Sign Out</span>
@@ -473,7 +490,7 @@ Thank you for your business!`;
         </header>
 
         {/* View Container */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 overflow-y-auto">
           {currentTab === 'dashboard' && (
             <Dashboard
               subscribers={subscribers}

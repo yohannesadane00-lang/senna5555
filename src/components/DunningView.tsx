@@ -297,7 +297,7 @@ Senna Commerce Billing Dept.`;
       {/* Main Table Container */}
       <div className="bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xs overflow-hidden">
         {/* Table Controls Header */}
-        <div className="p-5 border-b border-gray-200 dark:border-neutral-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50 dark:bg-black">
+        <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-gray-50/50 dark:bg-black">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Overdue Subscribers Directory</h2>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 font-mono">
@@ -305,9 +305,9 @@ Senna Commerce Billing Dept.`;
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             {/* Search Input */}
-            <div className="relative min-w-[200px]">
+            <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[200px]">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
@@ -319,7 +319,7 @@ Senna Commerce Billing Dept.`;
             </div>
 
             {/* Aging Filter Pills */}
-            <div className="flex items-center p-1 bg-gray-100 dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-800 text-xs font-medium">
+            <div className="flex items-center p-1 bg-gray-100 dark:bg-black rounded-xl border border-gray-200 dark:border-neutral-800 text-xs font-medium overflow-x-auto">
               {[
                 { id: 'ALL', label: 'All Overdue' },
                 { id: '1-15', label: '1–15 Days' },
@@ -329,7 +329,7 @@ Senna Commerce Billing Dept.`;
                 <button
                   key={tab.id}
                   onClick={() => setAgingTab(tab.id as any)}
-                  className={`px-3 py-1 rounded-lg transition-all text-xs ${
+                  className={`flex-1 sm:flex-none px-2.5 sm:px-3 py-1 rounded-lg transition-all text-xs whitespace-nowrap text-center ${
                     agingTab === tab.id
                       ? 'bg-[#184528] text-white shadow-xs font-semibold'
                       : 'text-gray-600 dark:text-gray-300 hover:text-[#184528] dark:hover:text-white'
@@ -342,66 +342,44 @@ Senna Commerce Billing Dept.`;
           </div>
         </div>
 
-        {/* Table Content */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-neutral-800 bg-gray-100/80 dark:bg-black text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
-                <th className="py-3.5 px-4 w-10 text-center">
-                  <button onClick={handleSelectAll} className="text-gray-500 dark:text-gray-400 hover:text-[#184528] dark:hover:text-white">
-                    {selectedIds.length > 0 && selectedIds.length === displayedSubscribers.length ? (
-                      <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
-                    ) : (
-                      <Square className="w-4 h-4" />
-                    )}
-                  </button>
-                </th>
-                <th className="py-3.5 px-4">Subscriber</th>
-                <th className="py-3.5 px-4">Phone / Normalized</th>
-                <th className="py-3.5 px-4">Telegram Chat ID</th>
-                <th className="py-3.5 px-4">Amount Due</th>
-                <th className="py-3.5 px-4">Aging Window</th>
-                <th className="py-3.5 px-4">Due Date</th>
-                <th className="py-3.5 px-4 text-right">Dunning Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
-              {displayedSubscribers.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-500 dark:text-gray-400">
-                    <div className="flex flex-col items-center gap-2">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">No overdue accounts in this view!</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">All subscriber accounts are current and up to date.</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                displayedSubscribers.map((sub) => {
-                  const daysOverdue = calculateDaysOverdue(sub.nextBillingDate);
-                  const isSelected = selectedIds.includes(sub.id);
-                  const normalizedPhone = normalizeETPhone(sub.phone);
-                  const displayPhone = formatPhoneDisplay(sub.phone);
+        {/* Content */}
+        {displayedSubscribers.length === 0 ? (
+          <div className="py-12 text-center text-gray-500 dark:text-gray-400 p-6">
+            <div className="flex flex-col items-center gap-2">
+              <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <p className="text-sm font-medium text-gray-900 dark:text-white">No overdue accounts in this view!</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">All subscriber accounts are current and up to date.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Mobile Cards View */}
+            <div className="block md:hidden divide-y divide-gray-200 dark:divide-neutral-800">
+              {displayedSubscribers.map((sub) => {
+                const daysOverdue = calculateDaysOverdue(sub.nextBillingDate);
+                const isSelected = selectedIds.includes(sub.id);
+                const normalizedPhone = normalizeETPhone(sub.phone);
+                const displayPhone = formatPhoneDisplay(sub.phone);
 
-                  let agingBadgeClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60';
-                  if (daysOverdue > 15 && daysOverdue <= 30) {
-                    agingBadgeClass = 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/60';
-                  } else if (daysOverdue > 30) {
-                    agingBadgeClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60';
-                  }
+                let agingBadgeClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60';
+                if (daysOverdue > 15 && daysOverdue <= 30) {
+                  agingBadgeClass = 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/60';
+                } else if (daysOverdue > 30) {
+                  agingBadgeClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60';
+                }
 
-                  return (
-                    <tr 
-                      key={sub.id} 
-                      className={`hover:bg-gray-50/80 dark:hover:bg-neutral-800/50 transition-colors ${
-                        isSelected ? 'bg-sky-50/50 dark:bg-sky-950/30' : ''
-                      }`}
-                    >
-                      {/* Checkbox */}
-                      <td className="py-4 px-4 text-center">
+                return (
+                  <div 
+                    key={sub.id} 
+                    className={`p-4 space-y-3 bg-white dark:bg-black transition-colors ${
+                      isSelected ? 'bg-sky-50/40 dark:bg-sky-950/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <button 
                           onClick={() => handleToggleSelect(sub.id)}
-                          className="text-gray-400 dark:text-gray-500 hover:text-[#184528] dark:hover:text-white"
+                          className="text-gray-400 dark:text-gray-500 hover:text-[#184528] dark:hover:text-white shrink-0"
                         >
                           {isSelected ? (
                             <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
@@ -409,80 +387,197 @@ Senna Commerce Billing Dept.`;
                             <Square className="w-4 h-4" />
                           )}
                         </button>
-                      </td>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">{sub.name}</h4>
+                          <span className="text-[11px] text-gray-500 dark:text-gray-400">{sub.planName}</span>
+                        </div>
+                      </div>
 
-                      {/* Name & Plan */}
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-gray-900 dark:text-white text-sm">{sub.name}</div>
-                        <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sub.planName}</div>
-                      </td>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 ${agingBadgeClass}`}>
+                        <AlertTriangle className="w-3 h-3" />
+                        {daysOverdue}d Overdue
+                      </span>
+                    </div>
 
-                      {/* Phone */}
-                      <td className="py-4 px-4 font-mono text-gray-700 dark:text-gray-300">
-                        <div>{displayPhone}</div>
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400">ET: {normalizedPhone}</div>
-                      </td>
-
-                      {/* Telegram ID */}
-                      <td className="py-4 px-4">
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-gray-100 dark:border-neutral-800">
+                      <div>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block uppercase font-medium">Phone</span>
+                        <span className="font-mono font-medium text-gray-900 dark:text-white text-[11px] mt-0.5 block">{displayPhone}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block uppercase font-medium">Amount Due</span>
+                        <span className="font-bold text-rose-600 dark:text-rose-400 font-mono text-xs mt-0.5 block">
+                          {formatETB(sub.amount)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block uppercase font-medium">Due Date</span>
+                        <span className="font-mono text-gray-700 dark:text-gray-300 text-[11px] mt-0.5 block">{sub.nextBillingDate}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block uppercase font-medium">Telegram</span>
                         {sub.telegramChatId ? (
-                          <span className="font-mono text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded border border-sky-200 dark:border-sky-800/60 text-[11px]">
+                          <span className="font-mono text-sky-700 dark:text-sky-300 text-[11px] mt-0.5 block truncate">
                             {sub.telegramChatId}
                           </span>
                         ) : (
-                          <span className="text-[11px] text-rose-600 dark:text-rose-400 italic">No Chat ID</span>
+                          <span className="text-[11px] text-rose-500 italic mt-0.5 block">No Chat ID</span>
                         )}
-                      </td>
+                      </div>
+                    </div>
 
-                      {/* Amount */}
-                      <td className="py-4 px-4 font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap">
-                        {formatETB(sub.amount)}
-                      </td>
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-neutral-800">
+                      <button
+                        onClick={() => onSendTelegram(sub)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/80 rounded-xl text-xs font-semibold"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Send Alert</span>
+                      </button>
+                      <button
+                        onClick={() => onSimulatePayment(sub)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 rounded-xl text-xs font-semibold"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Settle</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                      {/* Aging Window Badge */}
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${agingBadgeClass}`}>
-                          <AlertTriangle className="w-3 h-3" />
-                          {daysOverdue} {daysOverdue === 1 ? 'Day' : 'Days'} Overdue
-                        </span>
-                      </td>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-neutral-800 bg-gray-100/80 dark:bg-black text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
+                    <th className="py-3.5 px-4 w-10 text-center">
+                      <button onClick={handleSelectAll} className="text-gray-500 dark:text-gray-400 hover:text-[#184528] dark:hover:text-white">
+                        {selectedIds.length > 0 && selectedIds.length === displayedSubscribers.length ? (
+                          <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    </th>
+                    <th className="py-3.5 px-4">Subscriber</th>
+                    <th className="py-3.5 px-4">Phone / Normalized</th>
+                    <th className="py-3.5 px-4">Telegram Chat ID</th>
+                    <th className="py-3.5 px-4">Amount Due</th>
+                    <th className="py-3.5 px-4">Aging Window</th>
+                    <th className="py-3.5 px-4">Due Date</th>
+                    <th className="py-3.5 px-4 text-right">Dunning Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
+                  {displayedSubscribers.map((sub) => {
+                    const daysOverdue = calculateDaysOverdue(sub.nextBillingDate);
+                    const isSelected = selectedIds.includes(sub.id);
+                    const normalizedPhone = normalizeETPhone(sub.phone);
+                    const displayPhone = formatPhoneDisplay(sub.phone);
 
-                      {/* Due Date */}
-                      <td className="py-4 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                        {sub.nextBillingDate}
-                      </td>
+                    let agingBadgeClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60';
+                    if (daysOverdue > 15 && daysOverdue <= 30) {
+                      agingBadgeClass = 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/60';
+                    } else if (daysOverdue > 30) {
+                      agingBadgeClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60';
+                    }
 
-                      {/* Actions */}
-                      <td className="py-4 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-2">
-                          {/* Send Telegram Reminder */}
-                          <button
-                            onClick={() => onSendTelegram(sub)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/80 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/80 rounded-lg transition-colors text-xs font-medium"
-                            title="Send Telegram Dunning Alert"
+                    return (
+                      <tr 
+                        key={sub.id} 
+                        className={`hover:bg-gray-50/80 dark:hover:bg-neutral-800/50 transition-colors ${
+                          isSelected ? 'bg-sky-50/50 dark:bg-sky-950/30' : ''
+                        }`}
+                      >
+                        {/* Checkbox */}
+                        <td className="py-4 px-4 text-center">
+                          <button 
+                            onClick={() => handleToggleSelect(sub.id)}
+                            className="text-gray-400 dark:text-gray-500 hover:text-[#184528] dark:hover:text-white"
                           >
-                            <Send className="w-3.5 h-3.5" />
-                            <span>Alert</span>
+                            {isSelected ? (
+                              <CheckSquare className="w-4 h-4 text-[#184528] dark:text-emerald-400" />
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
                           </button>
+                        </td>
 
-                          {/* Settle / Simulate Payment */}
-                          <button
-                            onClick={() => onSimulatePayment(sub)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 rounded-lg transition-colors text-xs font-medium"
-                            title="Verify payment and settle arrears"
-                          >
-                            <CreditCard className="w-3.5 h-3.5" />
-                            <span>Settle</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                        {/* Name & Plan */}
+                        <td className="py-4 px-4">
+                          <div className="font-semibold text-gray-900 dark:text-white text-sm">{sub.name}</div>
+                          <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sub.planName}</div>
+                        </td>
+
+                        {/* Phone */}
+                        <td className="py-4 px-4 font-mono text-gray-700 dark:text-gray-300">
+                          <div>{displayPhone}</div>
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400">ET: {normalizedPhone}</div>
+                        </td>
+
+                        {/* Telegram ID */}
+                        <td className="py-4 px-4">
+                          {sub.telegramChatId ? (
+                            <span className="font-mono text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded border border-sky-200 dark:border-sky-800/60 text-[11px]">
+                              {sub.telegramChatId}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-rose-600 dark:text-rose-400 italic">No Chat ID</span>
+                          )}
+                        </td>
+
+                        {/* Amount */}
+                        <td className="py-4 px-4 font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap">
+                          {formatETB(sub.amount)}
+                        </td>
+
+                        {/* Aging Window Badge */}
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${agingBadgeClass}`}>
+                            <AlertTriangle className="w-3 h-3" />
+                            {daysOverdue} {daysOverdue === 1 ? 'Day' : 'Days'} Overdue
+                          </span>
+                        </td>
+
+                        {/* Due Date */}
+                        <td className="py-4 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                          {sub.nextBillingDate}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-4 px-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
+                            {/* Send Telegram Reminder */}
+                            <button
+                              onClick={() => onSendTelegram(sub)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/80 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/80 rounded-lg transition-colors text-xs font-medium"
+                              title="Send Telegram Dunning Alert"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>Alert</span>
+                            </button>
+
+                            {/* Settle / Simulate Payment */}
+                            <button
+                              onClick={() => onSimulatePayment(sub)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 rounded-lg transition-colors text-xs font-medium"
+                              title="Verify payment and settle arrears"
+                            >
+                              <CreditCard className="w-3.5 h-3.5" />
+                              <span>Settle</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
