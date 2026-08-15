@@ -1,7 +1,12 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
 const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+
+// Normalize URL in case rest/v1 endpoint path was passed
+const supabaseUrl = rawUrl
+  ? rawUrl.replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '')
+  : '';
 
 const isValidUrl = (url: string) => {
   try {

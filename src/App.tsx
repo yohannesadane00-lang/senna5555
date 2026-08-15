@@ -46,9 +46,9 @@ export default function App() {
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const DEFAULT_BOT_TOKEN = '8910475517:AAE9epqy7MjShdyTquj-_nTp0ROVSB8ArqM';
+  const DEFAULT_BOT_TOKEN = (import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '').trim();
 
-  // Bot token management with fallback and user-scoped secure storage persistence
+  // Bot token management with user-scoped secure storage persistence
   const [botToken, setBotToken] = useState<string>(DEFAULT_BOT_TOKEN);
 
   // 1. INSTANT LOCAL STATE CLEANUP & RESET ON USER CHANGE / LOGOUT
@@ -61,7 +61,7 @@ export default function App() {
 
     if (currentUserId) {
       const stored = getSecureItem<string>('telegram_bot_token', currentUserId);
-      if (stored && !stored.includes('8072136331')) {
+      if (stored) {
         setBotToken(stored.trim());
       } else {
         setBotToken(DEFAULT_BOT_TOKEN);
@@ -125,7 +125,12 @@ export default function App() {
       }
     }
 
-    const activeBotToken = (botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '8910475517:AAE9epqy7MjShdyTquj-_nTp0ROVSB8ArqM').trim().replace(/^bot/i, '');
+    const activeBotToken = (botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '').trim().replace(/^bot/i, '');
+
+    if (!activeBotToken) {
+      showToast('❌ Telegram Bot Token is not configured. Please set your bot token in Settings or environment variables.', 'error');
+      return;
+    }
 
     const invoiceMessageText = `🧾 SENNA OFFICIAL INVOICE
 ━━━━━━━━━━━━━━━━━━━━
@@ -509,6 +514,7 @@ Thank you for your business!`;
           {currentTab === 'subscribers' && (
             <SubscribersList
               subscribers={subscribers}
+              userId={currentUserId}
               isLoading={isLoading}
               isSyncing={isSyncing}
               onStatusChange={handleStatusChange}

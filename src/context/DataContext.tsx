@@ -22,15 +22,17 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user, organizationId } = useAuth();
   
-  const activeOrgId = organizationId || user?.uid || auth.currentUser?.uid || '';
+  const currentUserId = user?.uid || user?.id || organizationId || auth.currentUser?.uid || '';
 
-  // 1. STALE-WHILE-REVALIDATE: Initialize immediately from user-scoped cache
+  // 1. STALE-WHILE-REVALIDATE: Initialize immediately from user-scoped storage (subscribers_${userId})
   const [subscribers, setSubscribers] = useState<Subscriber[]>(() => {
-    if (!activeOrgId) return [];
+    if (!currentUserId) return [];
     try {
-      const cached = getSecureItem<Subscriber[]>('subscribers', activeOrgId);
+      const cached = getSecureItem<Subscriber[]>('subscribers', currentUserId);
       if (Array.isArray(cached)) {
-        return cached;
+        return cached.filter(
+          (sub) => !sub.userId || sub.userId === currentUserId || sub.organization_id === currentUserId
+        );
       }
     } catch (err) {
       console.warn('[DataContext] Cache read error:', err);
@@ -42,9 +44,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 2. REACTIVE DATA FETCHING & AUTO-CLEANUP
+  // 2. REACTIVE DATA FETCHING & FILTERED SUBSCRIPTIONS
   useEffect(() => {
-    if (!activeOrgId) {
+    if (!currentUserId) {
       setSubscribers([]);
       setIsDataLoaded(false);
       setIsLoading(false);
@@ -52,8 +54,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
-    // Load from user-scoped cache for 0ms frame-1 rendering
-    const cachedData = getSecureItem<Subscriber[]>('subscribers', activeOrgId) || [];
+    // Load from user-scoped cache for instant zero-latency rendering
+    const cachedData = (getSecureItem<Subscriber[]>('subscribers', currentUserId) || []).filter(
+      (sub) => !sub.userId || sub.userId === currentUserId || sub.organization_id === currentUserId
+    );
     setSubscribers(cachedData);
     setIsDataLoaded(true);
     setIsLoading(false);
@@ -64,11 +68,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       snapshot.forEach((docSnap: any) => {
         const d = docSnap.data();
-        const docOwner = d.organization_id || d.organizationId || d.user_id || d.userId || d.businessId || activeOrgId;
+        const docOwner = d.userId || d.user_id || d.organization_id || d.organizationId || d.businessId;
         
-        if (docOwner === activeOrgId) {
+        // Strict user-ownership isolation
+        if (!docOwner || docOwner === currentUserId) {
           remoteMap.set(docSnap.id, {
             id: docSnap.id,
+            userId: currentUserId,
+            organization_id: currentUserId,
             name: d.name || '',
             phone: d.phone || '',
             telegramChatId: d.telegramChatId || d.telegram_chat_id || '',
@@ -77,26 +84,29 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             status: (d.status as SubscriptionStatus) || 'Pending',
             nextBillingDate: d.nextBillingDate || d.next_billing_date || '',
             lastPaymentDate: d.lastPaymentDate || d.last_payment_date || '',
-            organization_id: activeOrgId,
+            created_at: d.created_at || d.createdAt,
+            updated_at: d.updated_at || d.updatedAt,
           });
         }
       });
 
-      // Merge remote snapshot with local cached items so nothing created locally is lost
-      const currentLocal = getSecureItem<Subscriber[]>('subscribers', activeOrgId) || [];
+      // Merge remote snapshot with local cached items for this user
+      const currentLocal = (getSecureItem<Subscriber[]>('subscribers', currentUserId) || []).filter(
+        (sub) => !sub.userId || sub.userId === currentUserId || sub.organization_id === currentUserId
+      );
       const mergedMap = new Map<string, Subscriber>();
 
       remoteMap.forEach((sub, id) => mergedMap.set(id, sub));
       currentLocal.forEach((sub) => {
         if (!mergedMap.has(sub.id)) {
-          mergedMap.set(sub.id, sub);
+          mergedMap.set(sub.id, { ...sub, userId: currentUserId, organization_id: currentUserId });
         }
       });
 
       const mergedList = Array.from(mergedMap.values());
 
       setSubscribers(mergedList);
-      setSecureItem('subscribers', activeOrgId, mergedList);
+      setSecureItem('subscribers', currentUserId, mergedList);
       setIsDataLoaded(true);
       setIsLoading(false);
       setIsSyncing(false);
@@ -107,14 +117,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       primaryQuery = query(
         collection(db, 'subscribers'),
         or(
-          where('organization_id', '==', activeOrgId),
-          where('user_id', '==', activeOrgId),
-          where('userId', '==', activeOrgId),
-          where('businessId', '==', activeOrgId)
+          where('userId', '==', currentUserId),
+          where('user_id', '==', currentUserId),
+          where('organization_id', '==', currentUserId),
+          where('organizationId', '==', currentUserId),
+          where('businessId', '==', currentUserId)
         )
       );
     } catch {
-      primaryQuery = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
+      primaryQuery = query(collection(db, 'subscribers'), where('userId', '==', currentUserId));
     }
 
     let unsubscribe = onSnapshot(
@@ -122,7 +133,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       processSnapshot,
       (err) => {
         console.warn('[DataContext] Firestore onSnapshot fallback:', err?.message || err);
-        const fallbackQuery = query(collection(db, 'subscribers'), where('organization_id', '==', activeOrgId));
+        const fallbackQuery = query(collection(db, 'subscribers'), where('userId', '==', currentUserId));
         unsubscribe = onSnapshot(fallbackQuery, processSnapshot, () => {
           setIsLoading(false);
           setIsSyncing(false);
@@ -133,72 +144,83 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => {
       unsubscribe();
     };
-  }, [activeOrgId, user]);
+  }, [currentUserId, user]);
 
-  // Sync to localStorage when subscribers state changes
+  // Sync to localStorage under subscribers_${userId} when subscribers state changes
   useEffect(() => {
-    if (activeOrgId) {
-      setSecureItem('subscribers', activeOrgId, subscribers);
+    if (currentUserId && subscribers.length >= 0) {
+      const userOwned = subscribers.filter(
+        (s) => !s.userId || s.userId === currentUserId || s.organization_id === currentUserId
+      );
+      setSecureItem('subscribers', currentUserId, userOwned);
     }
-  }, [subscribers, activeOrgId]);
+  }, [subscribers, currentUserId]);
 
   // Persist single subscriber to DB & Local Cache
   const persistSubscriber = async (sub: Subscriber) => {
-    const targetOrgId = activeOrgId || auth.currentUser?.uid || sub.organization_id || '';
-    if (!targetOrgId) {
-      console.warn('[DataContext] Blocked persistSubscriber: Missing targetOrgId.');
+    const targetUserId = sub.userId || currentUserId || auth.currentUser?.uid || '';
+    if (!targetUserId) {
+      console.warn('[DataContext] Blocked persistSubscriber: Missing userId.');
       return;
     }
 
-    // Update local storage immediately for complete reliability
-    const localCached = getSecureItem<Subscriber[]>('subscribers', targetOrgId) || [];
-    const updatedLocal = [sub, ...localCached.filter((s) => s.id !== sub.id)];
-    setSecureItem('subscribers', targetOrgId, updatedLocal);
+    const normalizedSub: Subscriber = {
+      ...sub,
+      userId: targetUserId,
+      organization_id: targetUserId,
+    };
 
+    // 1. Update local storage under subscribers_${userId} immediately
+    const localCached = getSecureItem<Subscriber[]>('subscribers', targetUserId) || [];
+    const updatedLocal = [normalizedSub, ...localCached.filter((s) => s.id !== normalizedSub.id)];
+    setSecureItem('subscribers', targetUserId, updatedLocal);
+
+    // 2. Explicit async database write to Firestore
     const payload = {
-      id: sub.id,
-      name: sub.name,
-      phone: sub.phone,
-      telegramChatId: sub.telegramChatId,
-      telegram_chat_id: sub.telegramChatId,
-      planName: sub.planName,
-      plan_name: sub.planName,
-      amount: sub.amount,
-      status: sub.status,
-      nextBillingDate: sub.nextBillingDate,
-      next_billing_date: sub.nextBillingDate,
-      lastPaymentDate: sub.lastPaymentDate,
-      last_payment_date: sub.lastPaymentDate,
-      user_id: targetOrgId,
-      userId: targetOrgId,
-      organization_id: targetOrgId,
-      organizationId: targetOrgId,
-      businessId: targetOrgId,
-      created_by: auth.currentUser?.uid || targetOrgId,
+      id: normalizedSub.id,
+      name: normalizedSub.name,
+      phone: normalizedSub.phone,
+      telegramChatId: normalizedSub.telegramChatId,
+      telegram_chat_id: normalizedSub.telegramChatId,
+      planName: normalizedSub.planName,
+      plan_name: normalizedSub.planName,
+      amount: normalizedSub.amount,
+      status: normalizedSub.status,
+      nextBillingDate: normalizedSub.nextBillingDate,
+      next_billing_date: normalizedSub.nextBillingDate,
+      lastPaymentDate: normalizedSub.lastPaymentDate,
+      last_payment_date: normalizedSub.lastPaymentDate,
+      userId: targetUserId,
+      user_id: targetUserId,
+      organization_id: targetUserId,
+      organizationId: targetUserId,
+      businessId: targetUserId,
+      created_by: auth.currentUser?.uid || targetUserId,
       updated_at: new Date().toISOString(),
     };
 
     try {
-      await setDoc(doc(db, 'subscribers', sub.id), payload, { merge: true });
+      await setDoc(doc(db, 'subscribers', normalizedSub.id), payload, { merge: true });
     } catch (err) {
       console.warn('[DataContext] Firestore setDoc notice:', err);
     }
 
+    // 3. Supabase upsert if configured
     if (isSupabaseConfigured) {
       try {
         await supabase.from('subscribers').upsert({
-          id: sub.id,
-          user_id: targetOrgId,
-          userId: targetOrgId,
-          organization_id: targetOrgId,
-          name: sub.name,
-          phone: sub.phone,
-          telegram_chat_id: sub.telegramChatId,
-          plan_name: sub.planName,
-          amount: sub.amount,
-          status: sub.status,
-          next_billing_date: sub.nextBillingDate,
-          last_payment_date: sub.lastPaymentDate,
+          id: normalizedSub.id,
+          user_id: targetUserId,
+          userId: targetUserId,
+          organization_id: targetUserId,
+          name: normalizedSub.name,
+          phone: normalizedSub.phone,
+          telegram_chat_id: normalizedSub.telegramChatId,
+          plan_name: normalizedSub.planName,
+          amount: normalizedSub.amount,
+          status: normalizedSub.status,
+          next_billing_date: normalizedSub.nextBillingDate,
+          last_payment_date: normalizedSub.lastPaymentDate,
         });
       } catch (err) {
         console.warn('[DataContext] Supabase upsert notice:', err);
@@ -208,13 +230,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Remove subscriber from DB & Local Cache
   const removeSubscriberFromDb = async (id: string) => {
-    const targetOrgId = activeOrgId || auth.currentUser?.uid || '';
-    if (!targetOrgId) return;
+    const targetUserId = currentUserId || auth.currentUser?.uid || '';
+    if (!targetUserId) return;
 
-    // Immediately update local cache
-    const localCached = getSecureItem<Subscriber[]>('subscribers', targetOrgId) || [];
+    // Immediately update local cache under subscribers_${userId}
+    const localCached = getSecureItem<Subscriber[]>('subscribers', targetUserId) || [];
     const updatedLocal = localCached.filter((s) => s.id !== id);
-    setSecureItem('subscribers', targetOrgId, updatedLocal);
+    setSecureItem('subscribers', targetUserId, updatedLocal);
 
     try {
       await deleteDoc(doc(db, 'subscribers', id));
@@ -224,7 +246,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (isSupabaseConfigured) {
       try {
-        await supabase.from('subscribers').delete().eq('id', id).eq('organization_id', targetOrgId);
+        await supabase
+          .from('subscribers')
+          .delete()
+          .eq('id', id)
+          .or(`user_id.eq.${targetUserId},organization_id.eq.${targetUserId}`);
       } catch (err) {
         console.warn('[DataContext] Supabase delete notice:', err);
       }
@@ -232,7 +258,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const refreshSubscribers = async () => {
-    if (!activeOrgId) return;
+    if (!currentUserId) return;
     setIsSyncing(true);
     // Triggers refetch by resetting isDataLoaded
     setIsDataLoaded(false);

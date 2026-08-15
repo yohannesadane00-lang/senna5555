@@ -20,7 +20,7 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
   userId,
 }) => {
   const { user, organizationId } = useAuth();
-  const currentUid = userId || user?.uid || organizationId || '';
+  const currentUid = userId || user?.uid || user?.id || organizationId || '';
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -67,11 +67,13 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
     const defaultBillingDate = thirtyDaysFromNow.toISOString().split('T')[0];
 
+    const ownerId = currentUid || user?.uid || user?.id || '';
+
     if (initialData?.id) {
       onSave({
         id: initialData.id,
-        userId: currentUid,
-        organization_id: currentUid,
+        userId: ownerId,
+        organization_id: ownerId,
         name: name.trim(),
         phone: normalizedPhone,
         telegramChatId: cleanTelegram,
@@ -83,8 +85,8 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
       });
     } else {
       onSave({
-        userId: currentUid,
-        organization_id: currentUid,
+        userId: ownerId,
+        organization_id: ownerId,
         name: name.trim(),
         phone: normalizedPhone,
         telegramChatId: cleanTelegram,

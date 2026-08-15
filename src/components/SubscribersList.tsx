@@ -19,6 +19,7 @@ import {
 
 interface SubscribersListProps {
   subscribers: Subscriber[];
+  userId?: string;
   isLoading?: boolean;
   isSyncing?: boolean;
   onStatusChange: (id: string, newStatus: SubscriptionStatus) => void;
@@ -31,6 +32,7 @@ interface SubscribersListProps {
 
 export const SubscribersList: React.FC<SubscribersListProps> = ({
   subscribers,
+  userId,
   isLoading = false,
   isSyncing = false,
   onStatusChange,
@@ -78,7 +80,11 @@ export const SubscribersList: React.FC<SubscribersListProps> = ({
     );
   }
 
-  const filteredSubscribers = subscribers.filter((sub) => {
+  const userScopedSubscribers = subscribers.filter(
+    (sub) => !userId || !sub.userId || sub.userId === userId || sub.organization_id === userId
+  );
+
+  const filteredSubscribers = userScopedSubscribers.filter((sub) => {
     const matchesSearch =
       sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sub.phone.includes(searchTerm) ||

@@ -24,7 +24,7 @@ export const Settings: React.FC<SettingsProps> = ({ botToken, onUpdateBotToken }
   const [taxId, setTaxId] = useState('0019283746');
   const [defaultCurrency, setDefaultCurrency] = useState('ETB');
   const [telegramBotToken, setTelegramBotToken] = useState(
-    botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '8910475517:AAE9epqy7MjShdyTquj-_nTp0ROVSB8ArqM'
+    botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || ''
   );
   const [testPhone, setTestPhone] = useState('0911223344');
   const [savedSuccess, setSavedSuccess] = useState(false);

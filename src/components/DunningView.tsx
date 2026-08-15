@@ -109,7 +109,12 @@ export const DunningView: React.FC<DunningViewProps> = ({
       return;
     }
 
-    const activeToken = (botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '8910475517:AAE9epqy7MjShdyTquj-_nTp0ROVSB8ArqM').trim().replace(/^bot/i, '');
+    const activeToken = (botToken || import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '').trim().replace(/^bot/i, '');
+
+    if (!activeToken) {
+      showToast('❌ Telegram Bot Token is not configured. Please set your bot token in Settings or environment variables.', 'error');
+      return;
+    }
 
     setIsBulkSending(true);
     setBulkProgress({ current: 0, total: targets.length });
