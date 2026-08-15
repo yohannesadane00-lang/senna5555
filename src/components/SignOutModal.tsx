@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogOut, X, AlertTriangle, Loader2 } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 interface SignOutModalProps {
   isOpen: boolean;
@@ -85,9 +86,13 @@ export const SignOutModal: React.FC<SignOutModalProps> = ({
 
             {/* Modal Content */}
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-4">
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-6 h-6" />
+              <div className="flex items-center gap-3">
+                {/* Brand Logo */}
+                <BrandLogo size="sm" withGlow />
+                {/* Warning Icon */}
+                <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
               </div>
 
               {/* Title & Description */}

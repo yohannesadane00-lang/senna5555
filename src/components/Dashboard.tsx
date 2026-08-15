@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Subscriber, SubscriptionStatus } from '../types';
 import { formatETB, formatPhoneDisplay, normalizeETPhone } from '../utils';
+import { BrandLogo } from './BrandLogo';
 import { 
   Users, 
   TrendingUp, 
@@ -144,19 +145,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
     <div className="space-y-8 max-w-7xl mx-auto text-gray-900 dark:text-gray-100">
       {/* Top Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-neutral-800 pb-5 sm:pb-6">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Executive Dashboard</h1>
-            {isSyncing && (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/60 px-2.5 py-0.5 rounded-full animate-pulse shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-600 dark:bg-sky-400 animate-ping" />
-                <span className="hidden xs:inline">Syncing live data...</span>
-              </span>
-            )}
+        <div className="flex items-center gap-3.5">
+          <BrandLogo size="lg" withGlow />
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Executive Dashboard</h1>
+              {isSyncing && (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/60 px-2.5 py-0.5 rounded-full animate-pulse shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-600 dark:bg-sky-400 animate-ping" />
+                  <span className="hidden xs:inline">Syncing live data...</span>
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Real-time subscriber metrics, ETB billing management, and automated collection status.
+            </p>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Real-time subscriber metrics, ETB billing management, and automated collection status.
-          </p>
         </div>
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
@@ -310,9 +314,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {subscribers.length === 0 ? (
           <div className="py-16 text-center p-6">
             <div className="flex flex-col items-center justify-center space-y-3 max-w-sm mx-auto">
-              <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-black border border-gray-200 dark:border-neutral-800 flex items-center justify-center text-gray-700 dark:text-gray-300 shadow-xs">
-                <Users className="w-6 h-6" />
-              </div>
+              <BrandLogo size="lg" withGlow />
               <div>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white">No Subscribers Yet</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Subscriber, SubscriptionStatus } from '../types';
 import { normalizeETPhone } from '../utils';
 import { useAuth } from '../context/AuthContext';
+import { BrandLogo } from './BrandLogo';
 import { X, Phone, Send, User, Info } from 'lucide-react';
 
 interface SubscriberModalProps {
@@ -112,13 +113,16 @@ export const SubscriberModal: React.FC<SubscriberModalProps> = ({
       {/* Modal Dialog */}
       <div className="relative z-10 bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden text-gray-900 dark:text-gray-100">
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-black shrink-0">
-          <div>
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">
-              {initialData ? 'Edit Subscriber Account' : 'Add New B2B Subscriber'}
-            </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Ethiopian phone normalization and Telegram Chat ID setup.
-            </p>
+          <div className="flex items-center gap-3">
+            <BrandLogo size="sm" withGlow />
+            <div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                {initialData ? 'Edit Subscriber Account' : 'Add New B2B Subscriber'}
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Ethiopian phone normalization and Telegram Chat ID setup.
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}

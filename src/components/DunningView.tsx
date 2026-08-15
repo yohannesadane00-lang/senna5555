@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Subscriber, SubscriptionStatus } from '../types';
 import { formatETB, formatPhoneDisplay, normalizeETPhone, calculateDaysOverdue } from '../utils';
+import { BrandLogo } from './BrandLogo';
 import { 
   AlertTriangle, 
   Send, 
@@ -188,16 +189,19 @@ Senna Commerce Billing Dept.`;
     <div className="space-y-8 max-w-7xl mx-auto text-gray-900 dark:text-gray-100">
       {/* Top Banner Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-neutral-800 pb-6">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl">
-              <ShieldAlert className="w-5 h-5" />
+        <div className="flex items-center gap-3.5">
+          <BrandLogo size="md" withGlow />
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 rounded-lg">
+                <ShieldAlert className="w-4 h-4" />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dunning & Arrears Engine</h1>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dunning & Arrears Engine</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Automated collections pipeline with Telegram dunning notices and aging analysis.
+            </p>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Automated collections pipeline with Telegram dunning notices and aging analysis.
-          </p>
         </div>
 
         <button

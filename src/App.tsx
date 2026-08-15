@@ -8,6 +8,7 @@ import { DunningView } from './components/DunningView';
 import { SubscriberModal } from './components/SubscriberModal';
 import { SignOutModal } from './components/SignOutModal';
 import { AuthScreen } from './components/AuthScreen';
+import { BrandLogo } from './components/BrandLogo';
 import { useAuth } from './context/AuthContext';
 import { useDataContext } from './context/DataContext';
 import { useTheme } from './context/ThemeContext';
@@ -353,10 +354,11 @@ Thank you for your business!`;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-700">
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center text-gray-700 dark:text-gray-300">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-gray-900" />
-          <p className="text-sm font-medium">Restoring session...</p>
+          <BrandLogo size="lg" withGlow />
+          <Loader2 className="w-6 h-6 animate-spin text-[#184528] dark:text-emerald-400" />
+          <p className="text-xs font-semibold tracking-wide uppercase text-gray-500">Restoring session...</p>
         </div>
       </div>
     );
@@ -413,12 +415,7 @@ Thank you for your business!`;
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img
-              src={logoImage}
-              alt="Senna Logo"
-              referrerPolicy="no-referrer"
-              className="w-7 h-7 rounded-lg object-cover md:hidden ring-1 ring-emerald-500/20 shadow-xs shrink-0"
-            />
+            <BrandLogo size="xs" withGlow className="shrink-0" />
             <div className="flex items-center gap-2 min-w-0">
               <div className="text-xs font-bold text-gray-700 dark:text-gray-200 tracking-tight truncate font-mono">
                 <span className="sm:hidden">

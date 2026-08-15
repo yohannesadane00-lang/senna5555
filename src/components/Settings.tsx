@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { auth } from '../lib/firebase';
 import { setSecureItem } from '../lib/storage';
 import { normalizeETPhone } from '../utils';
+import { BrandLogo } from './BrandLogo';
 import { 
   Building2, 
   Send, 
@@ -62,13 +63,19 @@ export const Settings: React.FC<SettingsProps> = ({ botToken, onUpdateBotToken }
       <form onSubmit={handleSave} className="space-y-6">
         {/* Business Profile */}
         <div className="bg-white dark:bg-black p-6 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-xs space-y-4">
-          <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 pb-4">
-            <div className="p-2 bg-gray-100 dark:bg-black text-gray-800 dark:text-gray-200 rounded-xl border border-gray-200 dark:border-neutral-800">
-              <Building2 className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 dark:border-neutral-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 dark:bg-black text-gray-800 dark:text-gray-200 rounded-xl border border-gray-200 dark:border-neutral-800">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">B2B Business Information</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Legal business entity details attached to subscriber receipts and invoice headers.</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">B2B Business Information</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Legal business entity details attached to subscriber receipts and invoice headers.</p>
+            <div className="flex items-center gap-2.5 px-3 py-1.5 bg-emerald-50/60 dark:bg-[#184528]/20 border border-emerald-200/60 dark:border-emerald-800/40 rounded-xl">
+              <BrandLogo size="xs" />
+              <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">Active Brand Icon</span>
             </div>
           </div>
 

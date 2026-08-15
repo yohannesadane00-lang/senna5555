@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth, mapFirebaseError } from '../context/AuthContext';
-import logoImage from '../assets/logo.jpg';
+import { BrandLogo } from './BrandLogo';
 import {
   Building2,
   Mail,
@@ -215,12 +215,7 @@ export const AuthScreen: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Brand Header */}
         <div className="flex justify-center items-center gap-3">
-          <img
-            src={logoImage}
-            alt="Senna Commerce"
-            referrerPolicy="no-referrer"
-            className="w-12 h-12 rounded-2xl object-cover shadow-md ring-1 ring-emerald-500/30"
-          />
+          <BrandLogo size="lg" withGlow />
           <span className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Senna Commerce</span>
         </div>
         <h2 className="mt-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
