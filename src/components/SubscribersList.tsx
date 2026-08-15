@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Subscriber, SubscriptionStatus } from '../types';
 import { formatETB, formatPhoneDisplay, normalizeETPhone } from '../utils';
 import { BrandLogo } from './BrandLogo';
+import { SubscriberHistoryModal } from './SubscriberHistoryModal';
 import { 
   Search, 
   Plus, 
@@ -15,7 +16,8 @@ import {
   AlertTriangle,
   CreditCard,
   AlertCircle,
-  Users
+  Users,
+  History
 } from 'lucide-react';
 
 interface SubscribersListProps {
@@ -46,6 +48,7 @@ export const SubscribersList: React.FC<SubscribersListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [historySubscriber, setHistorySubscriber] = useState<Subscriber | null>(null);
 
   const handleCopyPhone = (id: string, rawPhone: string) => {
     const normalized = normalizeETPhone(rawPhone);
@@ -298,6 +301,13 @@ export const SubscribersList: React.FC<SubscribersListProps> = ({
 
                       <div className="flex items-center gap-1">
                         <button
+                          onClick={() => setHistorySubscriber(sub)}
+                          className="p-2 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/60 rounded-lg border border-purple-200 dark:border-purple-800/60 transition-colors"
+                          title="View Alteration History & Audit Trail"
+                        >
+                          <History className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => onSimulatePayment(sub)}
                           className="p-2 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded-lg border border-emerald-200 dark:border-emerald-800/60"
                           title="Renew (+30 Days)"
@@ -447,6 +457,15 @@ export const SubscribersList: React.FC<SubscribersListProps> = ({
                               <option value="Overdue">Mark Overdue</option>
                             </select>
 
+                            {/* Alteration History button */}
+                            <button
+                              onClick={() => setHistorySubscriber(sub)}
+                              className="p-1.5 text-purple-700 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/60 rounded-lg transition-colors border border-purple-200 dark:border-purple-800/60"
+                              title="View Alteration History & Audit Trail"
+                            >
+                              <History className="w-4 h-4" />
+                            </button>
+
                             {/* Simulate Payment button */}
                             <button
                               onClick={() => onSimulatePayment(sub)}
@@ -493,6 +512,15 @@ export const SubscribersList: React.FC<SubscribersListProps> = ({
           </>
         )}
       </div>
+
+      {/* Subscriber Alteration History Audit Modal */}
+      {historySubscriber && (
+        <SubscriberHistoryModal
+          isOpen={!!historySubscriber}
+          subscriber={historySubscriber}
+          onClose={() => setHistorySubscriber(null)}
+        />
+      )}
     </div>
   );
 };
